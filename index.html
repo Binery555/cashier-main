@@ -250,7 +250,6 @@
     .share-icon{ width:56px; height:56px; background-color:#3b3c45; border-radius:50%; display:flex; align-items:center; justify-content:center; margin-bottom:8px; font-size:22px; }
     .cancel-btn{ text-align:center; padding:14px 0; font-size:16px; color:#cfcfd2; border-top:1px solid #3d3e48; }
     .instagram-icon{ background: radial-gradient(circle at 30% 30%, #fdf497 0%, #fd5949 45%, #d6249f 60%, #285AEB 90%); color:#fff; }
-
   </style>
 </head>
 <body>
@@ -833,7 +832,7 @@
       document.body.removeChild(probe);
       return px;
     }
-    const GAP_CM = 9.0; // ← PROFIT CARD NOW ~9 cm ABOVE THE SHARE SHEET
+    const GAP_CM = 8.5; // ← PROFIT CARD NOW ~8.5 cm ABOVE THE SHARE SHEET
 
     const elSide = document.getElementById('pcardSide');
     const elLev  = document.getElementById('pcardLev');
@@ -877,7 +876,7 @@
       overlay.classList.add('show');
       overlay.setAttribute('aria-hidden', 'false');
 
-      // Position card ~9cm above the sheet
+      // Position card ~8.5cm above the sheet
       requestAnimationFrame(()=>{ positionCardAboveSheet(); });
     }
 
