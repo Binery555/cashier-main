@@ -192,7 +192,7 @@
     .photo-slot--bottom img{ width:90%; height:90%; margin:5%; object-fit:cover; display:block; }
     .photo-empty::after{ content:''; position:absolute; inset:0; background:transparent; }
 
-    /* ====== SHARE OVERLAY (Profit Card) ====== */
+    /* ====== SHARE OVERLAY (container only) ====== */
     .overlay{
       position:fixed; inset:0; z-index:100; display:none;
       align-items:flex-start; justify-content:center;
@@ -209,47 +209,51 @@
       border:1px solid rgba(255,255,255,.15); box-shadow:0 4px 18px rgba(0,0,0,.4);
     }
 
-    /* ===== NEW Extra Compact Profit Card (replaces old) ===== */
+    /* ===== NEW Profit Card (REPLACED with your version) ===== */
     .pcard{
-      max-width: 260px;
-      width: min(88vw, 260px);
+      max-width: 300px;
+      width: min(90vw, 300px);
       background: url('https://iili.io/KKAe9kv.md.gif') center/cover no-repeat;
       color:#fff;
       border-radius:8px;
-      padding:0.5cm 12px;
+      padding:0.5cm 14px;
       position:relative;
       box-shadow:0 0 10px rgba(0,0,0,.45);
       font-family:"Binance PLEX","Segoe UI",Arial,sans-serif;
       font-variant-numeric: tabular-nums;
       overflow:hidden;
     }
-    /* shift inner content by 0.5cm to the right only */
-    .pcard .inner{ transform: translateX(0.5cm); }
+    /* ✅ Card inner content 0.8cm to the right */
+    .pcard .inner { transform: translateX(0.8cm); }
 
-    .pcard .header{ display:flex; align-items:flex-start; gap:2px; margin-bottom:0.3cm; }
-    .pcard .binance-logo{ width:9px; height:9px; margin-top:-1px; }
-    .pcard .text-block{ display:flex; flex-direction:column; margin-top:-1px; }
-    .pcard .binance-text{ font-weight:800; font-size:.38rem; color:#f0b90b; letter-spacing:.2px; }
-    .pcard .futures-text{ font-size:.42rem; color:#fff; font-weight:700; line-height:1; }
+    /* ✅ Logo + BINANCE FUTURES 0.5cm to the left */
+    .pcard .header{
+      display:flex;align-items:flex-start;gap:3px;margin-bottom:0.35cm;
+      transform: translateX(-0.5cm);
+    }
+    .pcard .binance-logo{width:11px;height:11px;margin-top:-1px;}
+    .pcard .text-block{display:flex;flex-direction:column;margin-top:-1px;}
+    .pcard .binance-text{font-weight:800;font-size:.45rem;color:#f0b90b;letter-spacing:.25px;}
+    .pcard .futures-text{font-size:.5rem;color:#fff;font-weight:700;line-height:1;}
 
-    .pcard .trade-info{ margin:3px 0; font-size:.38rem; font-weight:600; display:flex; gap:0.2cm; }
-    .pcard .short{ color:#ff4d6b; }
-    .pcard .long{ color:#3acf87; }
+    .pcard .trade-info{margin:4px 0;font-size:.45rem;font-weight:600;display:flex;gap:0.25cm;}
+    .pcard .short{color:#ff4d6b;} 
+    .pcard .long{color:#3acf87;}
 
-    .pcard .percentage{ font-size:1.05rem; font-weight:800; margin:4px 0; }
-    .pcard .percentage.green{ color:#00c292; }
-    .pcard .percentage.red{ color:#ff4d6b; }
+    .pcard .percentage{font-size:1.2rem;font-weight:800;margin:5px 0;}
+    .pcard .percentage.green{color:#00c292;} 
+    .pcard .percentage.red{color:#ff4d6b;}
 
-    .pcard .price-section{ margin:4px 0 5px; }
-    .pcard .price-line{ display:flex; justify-content:flex-start; gap:3px; margin-bottom:1px; }
-    .pcard .price-label{ color:#ccc; font-size:.38rem; width:58px; font-weight:600; }
-    .pcard .price-value{ color:#f0b90b; font-weight:800; font-size:.45rem; margin-left:10px; }
+    .pcard .price-section{margin:5px 0 6px;}
+    .pcard .price-line{display:flex;justify-content:flex-start;gap:5px;margin-bottom:2px;}
+    .pcard .price-label{color:#ccc;font-size:.45rem;width:65px;font-weight:600;}
+    .pcard .price-value{color:#f0b90b;font-weight:800;font-size:.55rem;margin-left:12px;}
 
-    .pcard .referral-section{ display:flex; align-items:center; gap:4px; margin-top:0.2cm; }
-    .pcard .qr{ width:20px; height:20px; }
-    .pcard .ref-text{ font-size:.38rem; color:#ddd; font-weight:600; }
-    .pcard .referral-code{ font-weight:800; font-size:.45rem; letter-spacing:.15px; }
-    .pcard .app-text{ font-size:.38rem; color:#f0b90b; margin-top:0; font-weight:700; }
+    .pcard .referral-section{display:flex;align-items:center;gap:6px;margin-top:0.25cm;}
+    .pcard .qr{width:24px;height:24px;}
+    .pcard .ref-text{font-size:.42rem;color:#ddd;font-weight:600;}
+    .pcard .referral-code{font-weight:800;font-size:.55rem;letter-spacing:.2px;}
+    .pcard .app-text{font-size:.42rem;color:#f0b90b;margin-top:0;font-weight:700;}
   </style>
 </head>
 <body>
@@ -379,13 +383,13 @@
     </nav>
   </div>
 
-  <!-- ===== SHARE OVERLAY (NEW compact card) ===== -->
+  <!-- ===== SHARE OVERLAY (NEW: your card version wired with IDs) ===== -->
   <div class="overlay" id="shareOverlay" aria-hidden="true">
     <div class="overlay-card-wrap">
       <button class="close-btn" id="overlayClose" aria-label="Close overlay"><i class="fa-solid fa-xmark"></i></button>
 
       <div class="pcard" id="pcard">
-        <div class="inner"><!-- all content is shifted right by 0.5cm -->
+        <div class="inner">
           <div class="header">
             <img class="binance-logo" src="https://iili.io/KKRCyss.th.png" alt="Binance Logo" />
             <div class="text-block">
@@ -423,7 +427,7 @@
               <div class="app-text">Get the Binance App</div>
             </div>
           </div>
-        </div><!-- /.inner -->
+        </div>
       </div><!-- /.pcard -->
     </div>
   </div>
@@ -673,7 +677,7 @@
       </div>`;
     const node = panel;
 
-    // click → open NEW compact overlay (this feeds the new IDs)
+    // click → open overlay and populate new compact card
     node.querySelector('.share').addEventListener('click', () => openProfitCardOverlay({
       sym, leverage, entry, mark, usedMargin, effMargin, mmr, qty, side
     }));
@@ -786,7 +790,7 @@
     ws.onerror=(err)=>{ console.error('[WS] Error', err); try{ ws.close(); }catch{} };
   }
 
-  /* ===== SHARE OVERLAY LOGIC (wired to NEW compact card) ===== */
+  /* ===== SHARE OVERLAY LOGIC (wired to your new card) ===== */
   const REF_CODE = '456516353';
   const overlay = document.getElementById('shareOverlay');
   const closeBtn = document.getElementById('overlayClose');
