@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-  <title>Futures Assets Mockup — with 6M Trend Profit Cards + Share → (NEW) Extra Compact Profit Card (7cm gap)</title>
+  <title>Futures Assets Mockup — with 6M Trend Profit Cards + Share → (NEW) Extra Compact Profit Card</title>
 
   <!-- Fonts & Icons -->
   <link href="https://db.onlinewebfonts.com/c/d05c19ccecf7003d248c60ffd6b5e8f7?family=Binance+PLEX" rel="stylesheet"/>
@@ -198,6 +198,8 @@
     }
     .overlay.show .overlay-card-wrap{ opacity:1; transform:translate(-50%,0); }
 
+    /* (Removed the small close/dot button) */
+
     /* ===== NEW Profit Card ===== */
     .pcard{
       max-width: 300px;
@@ -212,8 +214,8 @@
       font-variant-numeric: tabular-nums;
       overflow:hidden;
     }
-    .pcard .inner { transform: translateX(0.8cm); }
-    .pcard .header{ display:flex;align-items:flex-start;gap:3px;margin-bottom:0.35cm; transform: translateX(-0.5cm); }
+    .pcard .inner { transform: translateX(0.8cm); }           /* 0.8cm right */
+    .pcard .header{ display:flex;align-items:flex-start;gap:3px;margin-bottom:0.35cm; transform: translateX(-0.5cm); } /* 0.5cm left */
     .pcard .binance-logo{width:11px;height:11px;margin-top:-1px;}
     .pcard .text-block{display:flex;flex-direction:column;margin-top:-1px;}
     .pcard .binance-text{font-weight:800;font-size:.45rem;color:#f0b90b;letter-spacing:.25px;}
@@ -248,6 +250,7 @@
     .share-icon{ width:56px; height:56px; background-color:#3b3c45; border-radius:50%; display:flex; align-items:center; justify-content:center; margin-bottom:8px; font-size:22px; }
     .cancel-btn{ text-align:center; padding:14px 0; font-size:16px; color:#cfcfd2; border-top:1px solid #3d3e48; }
     .instagram-icon{ background: radial-gradient(circle at 30% 30%, #fdf497 0%, #fd5949 45%, #d6249f 60%, #285AEB 90%); color:#fff; }
+
   </style>
 </head>
 <body>
@@ -275,7 +278,7 @@
     </div>
     <!-- ===== /UPPER (fixed) ===== -->
 
-    <!-- ===== Balances / Actions / Feed ===== -->
+    <!-- ===== Balances / Actions / Feed (unchanged UI) ===== -->
     <section class="balance-panel" aria-label="Balances">
       <div class="balance-header">
         <span>Margin Balance <i id="eyeToggle" class="fas fa-eye" aria-hidden="true"></i></span>
@@ -382,6 +385,7 @@
 
     <!-- Profit card (floating) -->
     <div class="overlay-card-wrap" id="overlayCardWrap" style="bottom:0;">
+      <!-- (close button removed) -->
       <div class="pcard" id="pcard">
         <div class="inner">
           <div class="header">
@@ -562,7 +566,7 @@
       });
     }
 
-    /* ===== Exchange / calculations ===== */
+    /* ===== Exchange / calculations (unchanged) ===== */
     const MARGIN_STORE_KEY = 'futures_mock_saved_margins_v1';
     const round2 = (x) => Math.round((Number(x)||0) * 100) / 100;
     function loadSavedMargins(){ try { return JSON.parse(localStorage.getItem(MARGIN_STORE_KEY)) || {}; } catch { return {}; } }
@@ -829,7 +833,7 @@
       document.body.removeChild(probe);
       return px;
     }
-    const GAP_CM = 7.0; // ← PROFIT CARD NOW ~7 cm ABOVE THE SHARE SHEET
+    const GAP_CM = 9.0; // ← PROFIT CARD NOW ~9 cm ABOVE THE SHARE SHEET
 
     const elSide = document.getElementById('pcardSide');
     const elLev  = document.getElementById('pcardLev');
@@ -873,7 +877,7 @@
       overlay.classList.add('show');
       overlay.setAttribute('aria-hidden', 'false');
 
-      // Position card ~7cm above the sheet
+      // Position card ~9cm above the sheet
       requestAnimationFrame(()=>{ positionCardAboveSheet(); });
     }
 
