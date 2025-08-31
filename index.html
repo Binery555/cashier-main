@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-  <title>Futures Assets Mockup — with 6M Trend Profit Cards + Share → Profit Card Overlay</title>
+  <title>Futures Assets Mockup — with 6M Trend Profit Cards + Share → (NEW) Extra Compact Profit Card</title>
 
   <!-- Fonts & Icons -->
   <link href="https://db.onlinewebfonts.com/c/d05c19ccecf7003d248c60ffd6b5e8f7?family=Binance+PLEX" rel="stylesheet"/>
@@ -34,9 +34,9 @@
       --frame-gutter-x: 8px;
       --card-inset: 2px;
 
-      /* UPDATED: photo slot sizes (smaller) */
-      --slot-top: 16px;     /* balance header small icons */
-      --slot-bottom: 14px;  /* bottom nav icons */
+      /* photo slot sizes (small) */
+      --slot-top: 16px;
+      --slot-bottom: 14px;
     }
 
     *{margin:0;padding:0;box-sizing:border-box}
@@ -60,7 +60,6 @@
     .top-stack{
       position:sticky; top:0; z-index:30;
       background:var(--bg-base);
-      border-bottom:none !important;
       padding-bottom:8px; margin-bottom:8px;
     }
 
@@ -91,9 +90,8 @@
     .main-nav button.active{color:#FFF;border-bottom:2px solid #FFF}
     .main-nav button:first-child{ margin-left:-6px; }
 
-    .sub-toggle{display:flex;gap:6px;margin:8px 0 0 0;border-bottom:none !important;box-shadow:none !important;}
+    .sub-toggle{display:flex;gap:6px;margin:8px 0 0 0}
     .sub-toggle .toggle-btn{padding:4px 8px;font-size:11px;color:#A1A6B0;border-radius:6px;background:transparent;}
-    .sub-toggle .toggle-btn::after{ display:none !important; }
     .sub-toggle .toggle-btn.active{background:#323742;color:#FFF}
 
     /* ===== Other panels ===== */
@@ -124,13 +122,12 @@
     }
     .sub-nav-2 button{position:relative;padding:0 6px 8px;font-size:14px;font-weight:700;letter-spacing:.1px;color:var(--text-secondary);line-height:1;font-family:"Binance PLEX","Segoe UI",Roboto,sans-serif}
     .sub-nav-2 button.active{color:#fff}
-    .sub-nav-2 button.active::after{ display:none !important; }
 
     /* ===== PROFITS LIST ===== */
     .feed{
       overflow-y:auto; overscroll-behavior-y: contain;
       padding:12px 0 20px; background:var(--bg-base);
-      scrollbar-width:none; border-top:none !important;
+      scrollbar-width:none;
     }
     .feed::-webkit-scrollbar{display:none}
 
@@ -183,20 +180,15 @@
     .bottom-nav button{flex:1;display:flex;flex-direction:column;align-items:center;font-size:10px;color:#A1A6B0}
     .bottom-nav button.active{color:#FFF}
 
-    /* ===== NEW: photo slots (no frame) ===== */
+    /* ===== Photo slots (no frame) ===== */
     .photo-slot{
       width:var(--slot-top); height:var(--slot-top);
       display:inline-block; position:relative; overflow:hidden; border:none; outline:none;
       background:transparent; border-radius:4px;
     }
     .photo-slot--bottom{ width:var(--slot-bottom); height:var(--slot-bottom); border-radius:3px; }
-    .photo-slot input[type="file"]{
-      position:absolute; inset:0; opacity:0; cursor:pointer;
-    }
-    .photo-slot img{
-      width:88%; height:88%; margin:6%; object-fit:cover; display:block; border:none; outline:none; background:transparent;
-      image-rendering:auto;
-    }
+    .photo-slot input[type="file"]{ position:absolute; inset:0; opacity:0; cursor:pointer; }
+    .photo-slot img{ width:88%; height:88%; margin:6%; object-fit:cover; display:block; background:transparent; }
     .photo-slot--bottom img{ width:90%; height:90%; margin:5%; object-fit:cover; display:block; }
     .photo-empty::after{ content:''; position:absolute; inset:0; background:transparent; }
 
@@ -205,13 +197,10 @@
       position:fixed; inset:0; z-index:100; display:none;
       align-items:flex-start; justify-content:center;
       background:rgba(0,0,0,.55); backdrop-filter:saturate(120%) blur(2px);
-      padding-top:16px; /* show from top */
+      padding-top:16px;
     }
     .overlay.show{ display:flex; }
-    .overlay-card-wrap{
-      position:relative; transform:translateY(-14px); opacity:0;
-      transition:transform .25s ease, opacity .25s ease;
-    }
+    .overlay-card-wrap{ position:relative; transform:translateY(-14px); opacity:0; transition:transform .25s ease, opacity .25s ease; }
     .overlay.show .overlay-card-wrap{ transform:translateY(0); opacity:1; }
 
     .overlay .close-btn{
@@ -220,42 +209,47 @@
       border:1px solid rgba(255,255,255,.15); box-shadow:0 4px 18px rgba(0,0,0,.4);
     }
 
-    /* ===== Compact Profit Card (exact spec) ===== */
+    /* ===== NEW Extra Compact Profit Card (replaces old) ===== */
     .pcard{
-      max-width: 340px;
-      width: min(92vw, 340px);
+      max-width: 260px;
+      width: min(88vw, 260px);
       background: url('https://iili.io/KKAe9kv.md.gif') center/cover no-repeat;
       color:#fff;
-      border-radius:10px;
-      /* Reduced Top & Bottom padding (~12px), keep left 1cm (~38px) */
-      padding:12px 12px 12px 38px;
+      border-radius:8px;
+      padding:0.5cm 12px;
       position:relative;
-      box-shadow:0 0 15px rgba(0,0,0,.55);
+      box-shadow:0 0 10px rgba(0,0,0,.45);
       font-family:"Binance PLEX","Segoe UI",Arial,sans-serif;
       font-variant-numeric: tabular-nums;
+      overflow:hidden;
     }
-    .pcard .header{display:flex;align-items:flex-start;gap:5px;margin-bottom:3px;}
-    .pcard .binance-logo{width:18px;height:18px;margin-top:-3px;}
-    .pcard .text-block{display:flex;flex-direction:column;margin-top:-2px;}
-    .pcard .binance-text{font-weight:800;font-size:.68rem;color:#f0b90b;letter-spacing:.4px;}
-    .pcard .futures-text{font-size:.88rem;color:#fff;font-weight:700;line-height:1.1;}
+    /* shift inner content by 0.5cm to the right only */
+    .pcard .inner{ transform: translateX(0.5cm); }
 
-    .pcard .trade-info{margin:6px 0;font-size:.74rem;font-weight:600;}
-    .pcard .short{color:#ff4d6b;} .pcard .long{color:#3acf87;}
+    .pcard .header{ display:flex; align-items:flex-start; gap:2px; margin-bottom:0.3cm; }
+    .pcard .binance-logo{ width:9px; height:9px; margin-top:-1px; }
+    .pcard .text-block{ display:flex; flex-direction:column; margin-top:-1px; }
+    .pcard .binance-text{ font-weight:800; font-size:.38rem; color:#f0b90b; letter-spacing:.2px; }
+    .pcard .futures-text{ font-size:.42rem; color:#fff; font-weight:700; line-height:1; }
 
-    .pcard .percentage{font-size:1.45rem;font-weight:800;margin:6px 0;}
-    .pcard .percentage.green{color:#00c292;} .pcard .percentage.red{color:#ff4d6b;}
+    .pcard .trade-info{ margin:3px 0; font-size:.38rem; font-weight:600; display:flex; gap:0.2cm; }
+    .pcard .short{ color:#ff4d6b; }
+    .pcard .long{ color:#3acf87; }
 
-    .pcard .price-section{margin:7px 0 12px;}
-    .pcard .price-line{display:flex;justify-content:flex-start;gap:8px;margin-bottom:4px;}
-    .pcard .price-label{color:#ccc;font-size:.72rem;width:85px;font-weight:600;}
-    .pcard .price-value{color:#f0b90b;font-weight:800;font-size:.8rem;margin-left:28px;}
+    .pcard .percentage{ font-size:1.05rem; font-weight:800; margin:4px 0; }
+    .pcard .percentage.green{ color:#00c292; }
+    .pcard .percentage.red{ color:#ff4d6b; }
 
-    .pcard .referral-section{display:flex;align-items:center;gap:10px;margin-top:4px;}
-    .pcard .qr{width:52px;height:52px;}
-    .pcard .referral-code{font-weight:800;font-size:.9rem;letter-spacing:.2px;}
-    .pcard .ref-text{font-size:.7rem;color:#ddd;font-weight:600;}
-    .pcard .app-text{font-size:.7rem;color:#f0b90b;margin-top:1px;font-weight:700;}
+    .pcard .price-section{ margin:4px 0 5px; }
+    .pcard .price-line{ display:flex; justify-content:flex-start; gap:3px; margin-bottom:1px; }
+    .pcard .price-label{ color:#ccc; font-size:.38rem; width:58px; font-weight:600; }
+    .pcard .price-value{ color:#f0b90b; font-weight:800; font-size:.45rem; margin-left:10px; }
+
+    .pcard .referral-section{ display:flex; align-items:center; gap:4px; margin-top:0.2cm; }
+    .pcard .qr{ width:20px; height:20px; }
+    .pcard .ref-text{ font-size:.38rem; color:#ddd; font-weight:600; }
+    .pcard .referral-code{ font-weight:800; font-size:.45rem; letter-spacing:.15px; }
+    .pcard .app-text{ font-size:.38rem; color:#f0b90b; margin-top:0; font-weight:700; }
   </style>
 </head>
 <body>
@@ -288,7 +282,7 @@
       <div class="balance-header">
         <span>Margin Balance <i id="eyeToggle" class="fas fa-eye" aria-hidden="true"></i></span>
 
-        <!-- >>> three photo slots (no frame) -->
+        <!-- photo slots -->
         <span class="icon-group" aria-label="Actions">
           <label class="photo-slot photo-empty" data-slot="top-reward">
             <input type="file" accept=".jpg,.jpeg,image/jpeg" capture="environment">
@@ -385,47 +379,52 @@
     </nav>
   </div>
 
-  <!-- ===== SHARE OVERLAY (hidden by default) ===== -->
+  <!-- ===== SHARE OVERLAY (NEW compact card) ===== -->
   <div class="overlay" id="shareOverlay" aria-hidden="true">
     <div class="overlay-card-wrap">
       <button class="close-btn" id="overlayClose" aria-label="Close overlay"><i class="fa-solid fa-xmark"></i></button>
+
       <div class="pcard" id="pcard">
-        <div class="header">
-          <img class="binance-logo" src="https://iili.io/KKRCyss.th.png" alt="Binance Logo" />
-          <div class="text-block">
-            <div class="binance-text">BINANCE</div>
-            <div class="futures-text">FUTURES</div>
+        <div class="inner"><!-- all content is shifted right by 0.5cm -->
+          <div class="header">
+            <img class="binance-logo" src="https://iili.io/KKRCyss.th.png" alt="Binance Logo" />
+            <div class="text-block">
+              <div class="binance-text">BINANCE</div>
+              <div class="futures-text">FUTURES</div>
+            </div>
           </div>
-        </div>
 
-        <div class="trade-info">
-          <span id="pcardSide" class="long">Long</span> |
-          <span id="pcardLev">20x</span> |
-          <span id="pcardSym">BTCUSDT Perpetual</span>
-        </div>
-
-        <div id="pcardPct" class="percentage green">+0.35%</div>
-
-        <div class="price-section">
-          <div class="price-line">
-            <span class="price-label">Entry Price</span>
-            <span id="pcardEntry" class="price-value">0.00</span>
+          <div class="trade-info">
+            <span id="pcardSide" class="long">Long</span>
+            <span>|</span>
+            <span id="pcardLev">20x</span>
+            <span>|</span>
+            <span id="pcardSym">BTCUSDT Perpetual</span>
           </div>
-          <div class="price-line">
-            <span class="price-label">Last Price</span>
-            <span id="pcardLast" class="price-value">0.00</span>
-          </div>
-        </div>
 
-        <div class="referral-section">
-          <img id="pcardQR" class="qr" src="https://api.qrserver.com/v1/create-qr-code/?size=80x80&data=456516353" alt="QR Code"/>
-          <div>
-            <div class="ref-text">Referral Code</div>
-            <div id="pcardRef" class="referral-code">456516353</div>
-            <div class="app-text">Get the Binance App</div>
+          <div id="pcardPct" class="percentage green">+0.35%</div>
+
+          <div class="price-section">
+            <div class="price-line">
+              <span class="price-label">Entry Price</span>
+              <span id="pcardEntry" class="price-value">0.00</span>
+            </div>
+            <div class="price-line">
+              <span class="price-label">Last Price</span>
+              <span id="pcardLast" class="price-value">0.00</span>
+            </div>
           </div>
-        </div>
-      </div>
+
+          <div class="referral-section">
+            <img id="pcardQR" class="qr" src="https://api.qrserver.com/v1/create-qr-code/?size=80x80&data=456516353" alt="QR Code"/>
+            <div>
+              <div class="ref-text">Referral Code</div>
+              <div id="pcardRef" class="referral-code">456516353</div>
+              <div class="app-text">Get the Binance App</div>
+            </div>
+          </div>
+        </div><!-- /.inner -->
+      </div><!-- /.pcard -->
     </div>
   </div>
 
@@ -436,7 +435,7 @@
     const btns  = [...wrap.querySelectorAll('.toggle-btn')];
     const thumb = wrap.querySelector('.seg-thumb');
     const setActive = (i) => { btns.forEach((b,idx)=> b.classList.toggle('active', idx===i)); thumb.style.transform = `translateX(${i*100}%)`; };
-    setActive(0); btns.forEach((b,i)=> b.addEventListener('click',()=>setActive(i)));
+    setActive(0); btns.forEach((b,i)=> btns[i].addEventListener('click',()=>setActive(i)));
   })();
 
   /* ===== Layout sizing ===== */
@@ -493,9 +492,9 @@
   const quantizeToTick = (price, tickSize) => { const step = parseFloat(tickSize); if (!isFinite(price) || !isFinite(step) || step <= 0) return price; return Math.round(price / step) * step; };
   const quantizeDownToStep = (qty, stepSize) => { const step = parseFloat(stepSize); if (!isFinite(qty) || !isFinite(step) || step <= 0) return qty; return Math.floor(qty / step) * step; };
   function joinIntDec(i, d) { const I = numberWithCommas(i); return d !== undefined ? I + '.' + d : I; }
-  function shuffle(arr){ for (let i = arr.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [arr[i], arr[j]] = [arr[j]]; } return arr; }
+  function shuffle(arr){ for (let i = arr.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [arr[i], arr[j]] = [arr[j], arr[i]]; } return arr; }
 
-  /* ====== NEW: photo-slot logic (defaults + persistence) ====== */
+  /* ====== photo-slot logic (defaults + persistence) ====== */
   const SLOT_KEY_PREFIX = 'photo_slot_';
   const DEFAULT_URLS = {
     'top-reward':   'https://iili.io/K2Mnzqx.jpg',
@@ -538,7 +537,7 @@
     });
   }
 
-  /* ===== Exchange / calculations / WS / panels ===== */
+  /* ===== Exchange / calculations ===== */
   const MARGIN_STORE_KEY = 'futures_mock_saved_margins_v1';
   const round2 = (x) => Math.round((Number(x)||0) * 100) / 100;
   function loadSavedMargins(){ try { return JSON.parse(localStorage.getItem(MARGIN_STORE_KEY)) || {}; } catch { return {}; } }
@@ -577,7 +576,7 @@
   const seedSymbols = ['BTCUSDT','ETHUSDT','BNBUSDT','ADAUSDT','SOLUSDT','XRPUSDT','DOTUSDT','LTCUSDT','LINKUSDT','DOGEUSDT','AAVEUSDT','SUSHIUSDT','SHIBUSDT','COMPUSDT','ETCUSDT','ZECUSDT','XMRUSDT','LRCUSDT','QNTUSDT','CRVUSDT','UNIUSDT','BCHUSDT','XLMUSDT','ATOMUSDT','MATICUSDT','AVAXUSDT','TRXUSDT','EOSUSDT','NEARUSDT','FILUSDT','OPUSDT','ARBUSDT','APTUSDT','SUIUSDT','INJUSDT','RNDRUSDT','GALAUSDT','THETAUSDT','SANDUSDT','MANAUSDT','AXSUSDT','CFXUSDT','ICPUSDT','LDOUSDT','PEPEUSDT','FLOKIUSDT','WIFUSDT','ARKUSDT','IOTAUSDT','KASUSDT','PYTHUSDT','STRKUSDT','JUPUSDT','APEUSDT','BLURUSDT','SEIUSDT','TIAUSDT','TONUSDT','ONDOUSDT'];
   const allSymbols = Array.from(new Set([...primeSymbols, ...seedSymbols]));
 
-  const maintenanceMarginRates = { BTCUSDT:0.004, ETHUSDT:0.005, BNBUSDT:0.005, ADAUSDT:0.010, SOLUSDT:0.008, XRPUSDT:0.010, DOTUSDT:0.010, LTCUSDT:0.010, LINKUSDT:0.010, DOGEUSDT:0.012, AAVEUSDT:0.010, SUSHIUSDT:0.015, SHIBUSDT:0.020, COMPUSDT:0.010, ETCUSDT:0.010, ZECUSDT:0.015, XMRUSDT:0.020, LRCUSDT:0.020, QNTUSDT:0.015, CRVUSDT:0.020, UNIUSDT:0.010, BCHUSDT:0.010, XLMUSDT:0.015, ATOMUSDT:0.010, MATICUSDT:0.010, AVAXUSDT:0.010, TRXUSDT:0.020, EOSUSDT:0.015, NEARUSDT:0.020, FILUSDT:0.015, OPUSDT:0.015, ARBUSDT:0.020, APTUSDT:0.015, SUIUSDT:0.020, INJUSDT:0.015, RNDRUSDT:0.015, GALAUSDT:0.025, THETAUSDT:0.020, SANDUSDT:0.020, MANAUSDT:0.020, AXSUSDT:0.020, CFXUSDT:0.025, ICPUSDT:0.015, LDOUSDT:0.020, PEPEUSDT:0.030, FLOKIUSDT:0.030, WIFUSDT:0.030, ARKUSDT:0.020, IOTAUSDT:0.020, KASUSDT:0.025, PYTHUSDT:0.020, STRKUSDT:0.020, JUPUSDT:0.020, APEUSDT:0.020, BLURUSDT:0.020, SEIUSDT:0.020, TIAUSDT:0.020, TONUSDT:0.015, ONDOUSDT:0.020 };
+  const maintenanceMarginRates = { BTCUSDT:0.004, ETHUSDT:0.005, BNBUSDT:0.005, ADAUSDT:0.010, SOLUSDT:0.008, XRPUSDT:0.010, DOTUSDT:0.010, LTCUSDT:0.010, LINKUSDT:0.010, DOGEUSDT:0.012, AAVEUSDT:0.010, SUSHIUSDT:0.015, SHIBUSDT:0.020, COMPUSDT:0.010, ETCUSDT:0.010, ZECUSDT:0.015, XMRUSDT:0.020, LRCUSDT:0.020, QNTUSDT:0.015, CRVUSDT:0.020, UNIUSDT:0.010, BCHUSDT:0.010, XLMUSDT:0.015, ATOMUSDT:0.010, MATICUSDT:0.010, AVAXUSDT:0.010, TRXUSDT:0.020, EOSUSDT:0.015, NEARUSDT:0.020, FILUSDT:0.015, OPUSDT:0.015, ARBUSDT:0.020, APTUSDT:0.015, SUIUSDT:0.020, INJUSDT:0.015, RNDRUSDT:0.015, ICPUSDT:0.015, LDOUSDT:0.020, PEPEUSDT:0.030, FLOKIUSDT:0.030, WIFUSDT:0.030, IOTAUSDT:0.020, KASUSDT:0.025, PYTHUSDT:0.020, STRKUSDT:0.020, JUPUSDT:0.020, APEUSDT:0.020, BLURUSDT:0.020, SEIUSDT:0.020, TIAUSDT:0.020, TONUSDT:0.015, ONDOUSDT:0.020 };
   const getMaintRate = (sym) => maintenanceMarginRates[sym] ?? 0.01;
 
   const qtyFrom = (marginUsed, leverage, entry) => (leverage * marginUsed) / entry;
@@ -674,7 +673,7 @@
       </div>`;
     const node = panel;
 
-    // === Attach share click -> open overlay with this trade ===
+    // click → open NEW compact overlay (this feeds the new IDs)
     node.querySelector('.share').addEventListener('click', () => openProfitCardOverlay({
       sym, leverage, entry, mark, usedMargin, effMargin, mmr, qty, side
     }));
@@ -787,7 +786,7 @@
     ws.onerror=(err)=>{ console.error('[WS] Error', err); try{ ws.close(); }catch{} };
   }
 
-  /* ===== SHARE OVERLAY LOGIC ===== */
+  /* ===== SHARE OVERLAY LOGIC (wired to NEW compact card) ===== */
   const REF_CODE = '456516353';
   const overlay = document.getElementById('shareOverlay');
   const closeBtn = document.getElementById('overlayClose');
@@ -802,33 +801,27 @@
   const elQR   = document.getElementById('pcardQR');
 
   function openProfitCardOverlay(t){
-    // Compute up-to-date ROI from current mark
     const pnl = (t.side === 'LONG') ? upnlLong(t.mark, t.entry, t.qty) : upnlShort(t.mark, t.entry, t.qty);
-    const roi = roiPct(pnl, t.usedMargin); // %
-    // Side text + color
+    const roi = roiPct(pnl, t.usedMargin);
+
     const isLong = t.side === 'LONG';
     elSide.textContent = isLong ? 'Long' : 'Short';
     elSide.classList.toggle('long', isLong);
     elSide.classList.toggle('short', !isLong);
 
-    // Leverage & Symbol
     elLev.textContent = `${t.leverage}x`;
     elSym.textContent = `${t.sym} Perpetual`;
 
-    // ROI percentage with +/- and green/red
     elPct.textContent = (roi >= 0 ? '+' : '') + toFixedSafe(roi,2) + '%';
     elPct.classList.toggle('green', roi >= 0);
     elPct.classList.toggle('red', roi < 0);
 
-    // Prices
     elEntry.textContent = formatPrice(t.sym, t.entry);
     elLast.textContent  = formatPrice(t.sym, t.mark);
 
-    // Referral
     elRef.textContent = REF_CODE;
     elQR.src = `https://api.qrserver.com/v1/create-qr-code/?size=80x80&data=${encodeURIComponent(REF_CODE)}`;
 
-    // Show overlay
     overlay.classList.add('show');
     overlay.setAttribute('aria-hidden', 'false');
   }
@@ -847,7 +840,7 @@
     realizedTodayPct = REALIZED_MIN_PCT + Math.random()*(REALIZED_MAX_PCT - REALIZED_MIN_PCT);
     realizedTodayUSD = marginBalanceTarget * (realizedTodayPct/100);
 
-    initPhotoSlots();  // JPG upload slots + defaults
+    initPhotoSlots();
 
     await seedWithFuturesMark6M();
     forceTwoSmallLossesRandom();
