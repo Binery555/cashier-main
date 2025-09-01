@@ -155,7 +155,7 @@
     .label { font-size: 12px; color: var(--text-secondary); border-bottom: 1px dotted var(--text-secondary); padding-bottom: 2px; display: inline-block; }
     .label.no-line { border-bottom: none; }
     .value { font-size: 14px; font-weight: 400; color: #fff; transition: all 0.2s ease; }
-    .value.green, .value.percent.green { color: var(--text-green); font-size: 20px; font-weight: 800; } /* increased */
+    .value.green, .value.percent.green { color: var(--text-green); font-size: 20px; font-weight: 800; }
     .value.red, .value.percent.red { color: var(--text-red); font-size: 18px; font-weight: 700; }
     .margin-ratio-value { font-size: 12px !important; }
 
@@ -212,7 +212,7 @@
       font-variant-numeric: tabular-nums;
       overflow:hidden;
     }
-    .pcard .inner { transform: translateX(0.55cm); }      /* shifted a bit more left (was 0.8cm) */
+    .pcard .inner { transform: translateX(0.55cm); }
     .pcard .header{ display:flex;align-items:flex-start;gap:3px;margin-bottom:0.35cm; transform: translateX(-0.5cm); }
     .pcard .binance-logo{width:11px;height:11px;margin-top:-1px;}
     .pcard .text-block{display:flex;flex-direction:column;margin-top:-1px;}
@@ -222,7 +222,7 @@
     .pcard .short{color:#ff4d6b;} 
     .pcard .long{color:#3acf87;}
     .pcard .percentage{font-size:1.2rem;font-weight:800;margin:5px 0;}
-    .pcard .percentage.green{color:#00c292; font-size:1.35rem; font-weight:900;} /* bigger green % */
+    .pcard .percentage.green{color:#00c292; font-size:1.35rem; font-weight:900;}
     .pcard .percentage.red{color:#ff4d6b;}
     .pcard .price-section{margin:5px 0 6px;}
     .pcard .price-line{display:flex;justify-content:flex-start;gap:5px;margin-bottom:2px;}
@@ -275,7 +275,7 @@
     </div>
     <!-- ===== /UPPER (fixed) ===== -->
 
-    <!-- ===== Balances / Actions / Feed (unchanged UI) ===== -->
+    <!-- ===== Balances / Actions / Feed ===== -->
     <section class="balance-panel" aria-label="Balances">
       <div class="balance-header">
         <span>Margin Balance <i id="eyeToggle" class="fas fa-eye" aria-hidden="true"></i></span>
@@ -382,7 +382,6 @@
 
     <!-- Profit card (floating) -->
     <div class="overlay-card-wrap" id="overlayCardWrap" style="bottom:0;">
-      <!-- (close button removed) -->
       <div class="pcard" id="pcard">
         <div class="inner">
           <div class="header">
@@ -493,8 +492,12 @@
     const realizedSpan = document.getElementById("realizedSpan");
     const eye = document.getElementById("eyeToggle");
 
+    /* ===== Account display ranges ===== */
     const BAL_MIN = 350000, BAL_MAX = 500000;
-    const REALIZED_MIN_PCT = 0.50, REALIZED_MAX_PCT = 2.00;
+
+    /* >>> Today’s realized PNL absolute random range as requested <<< */
+    const REALIZED_MIN_USD = 2500;
+    const REALIZED_MAX_USD = 8000;
 
     let showTop = true;
     let marginBalanceTarget = 0;
@@ -518,7 +521,7 @@
     const quantizeToTick = (price, tickSize) => { const step = parseFloat(tickSize); if (!isFinite(price) || !isFinite(step) || step <= 0) return price; return Math.round(price / step) * step; };
     const quantizeDownToStep = (qty, stepSize) => { const step = parseFloat(stepSize); if (!isFinite(qty) || !isFinite(step) || step <= 0) return qty; return Math.floor(qty / step) * step; };
     function joinIntDec(i, d) { const I = numberWithCommas(i); return d !== undefined ? I + '.' + d : I; }
-    function shuffle(arr){ for (let i = arr.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [arr[i], arr[j]] = [arr[j], arr[i]]; } return arr; }
+    function shuffle(arr){ for (let i = arr.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [arr[i], arr[j]] = [arr[j]]; } return arr; }
 
     /* ====== photo-slot logic (defaults + persistence) ====== */
     const SLOT_KEY_PREFIX = 'photo_slot_';
@@ -563,7 +566,7 @@
       });
     }
 
-    /* ===== Exchange / calculations (unchanged) ===== */
+    /* ===== Exchange / calculations (Binance-style) ===== */
     const MARGIN_STORE_KEY = 'futures_mock_saved_margins_v1';
     const round2 = (x) => Math.round((Number(x)||0) * 100) / 100;
     function loadSavedMargins(){ try { return JSON.parse(localStorage.getItem(MARGIN_STORE_KEY)) || {}; } catch { return {}; } }
@@ -602,9 +605,11 @@
     const seedSymbols = ['BTCUSDT','ETHUSDT','BNBUSDT','ADAUSDT','SOLUSDT','XRPUSDT','DOTUSDT','LTCUSDT','LINKUSDT','DOGEUSDT','AAVEUSDT','SUSHIUSDT','SHIBUSDT','COMPUSDT','ETCUSDT','ZECUSDT','XMRUSDT','LRCUSDT','QNTUSDT','CRVUSDT','UNIUSDT','BCHUSDT','XLMUSDT','ATOMUSDT','MATICUSDT','AVAXUSDT','TRXUSDT','EOSUSDT','NEARUSDT','FILUSDT','OPUSDT','ARBUSDT','APTUSDT','SUIUSDT','INJUSDT','RNDRUSDT','GALAUSDT','THETAUSDT','SANDUSDT','MANAUSDT','AXSUSDT','CFXUSDT','ICPUSDT','LDOUSDT','PEPEUSDT','FLOKIUSDT','WIFUSDT','ARKUSDT','IOTAUSDT','KASUSDT','PYTHUSDT','STRKUSDT','JUPUSDT','APEUSDT','BLURUSDT','SEIUSDT','TIAUSDT','TONUSDT','ONDOUSDT'];
     const allSymbols = Array.from(new Set([...primeSymbols, ...seedSymbols]));
 
+    /* Approx symbol-wise maintenance margin rate (cross, simplified) */
     const maintenanceMarginRates = { BTCUSDT:0.004, ETHUSDT:0.005, BNBUSDT:0.005, ADAUSDT:0.010, SOLUSDT:0.008, XRPUSDT:0.010, DOTUSDT:0.010, LTCUSDT:0.010, LINKUSDT:0.010, DOGEUSDT:0.012, AAVEUSDT:0.010, SUSHIUSDT:0.015, SHIBUSDT:0.020, COMPUSDT:0.010, ETCUSDT:0.010, ZECUSDT:0.015, XMRUSDT:0.020, LRCUSDT:0.020, QNTUSDT:0.015, CRVUSDT:0.020, UNIUSDT:0.010, BCHUSDT:0.010, XLMUSDT:0.015, ATOMUSDT:0.010, MATICUSDT:0.010, AVAXUSDT:0.010, TRXUSDT:0.020, EOSUSDT:0.015, NEARUSDT:0.020, FILUSDT:0.015, OPUSDT:0.015, ARBUSDT:0.020, APTUSDT:0.015, SUIUSDT:0.020, INJUSDT:0.015, RNDRUSDT:0.015, ICPUSDT:0.015, LDOUSDT:0.020, PEPEUSDT:0.030, FLOKIUSDT:0.030, WIFUSDT:0.030, IOTAUSDT:0.020, KASUSDT:0.025, PYTHUSDT:0.020, STRKUSDT:0.020, JUPUSDT:0.020, APEUSDT:0.020, BLURUSDT:0.020, SEIUSDT:0.020, TIAUSDT:0.020, TONUSDT:0.015, ONDOUSDT:0.020 };
     const getMaintRate = (sym) => maintenanceMarginRates[sym] ?? 0.01;
 
+    /* Futures linear PnL/ROI (USDT-M) */
     const qtyFrom = (marginUsed, leverage, entry) => (leverage * marginUsed) / entry;
     const upnlLong  = (mark, entry, qty) => (mark - entry) * qty;
     const upnlShort = (mark, entry, qty) => (entry - mark) * qty;
@@ -612,6 +617,7 @@
     const maintenance = (mmr, mark, qty) => mmr * mark * qty;
     const marginBalanceCalc = (effectiveMargin, uPnL) => effectiveMargin + uPnL;
 
+    /* Cross-mode liquidation price (simplified approximation) */
     function liqPriceLong(entry, leverage, mmr, marginUsed, effectiveMargin) {
       const Q = (leverage * marginUsed) / entry;
       const denom = Q * (1 - mmr);
@@ -783,6 +789,7 @@
       unrealizedSum = sum; refreshTop();
     }
 
+    /* Ensure both win & loss trades visible */
     function forceTwoSmallLossesRandom(){
       if (trades.length < 2) return;
       const chosen=new Set();
@@ -793,6 +800,7 @@
       recalcAccountTop();
     }
 
+    /* Live mark prices (Binance stream) */
     function connectFuturesMarkWS(){
       const WS_URL='wss://fstream.binance.com/ws/!markPrice@arr';
       let ws=new WebSocket(WS_URL);
@@ -819,7 +827,7 @@
     const overlayCardWrap = document.getElementById('overlayCardWrap');
     const shareSheet = document.getElementById('shareSheet');
 
-    // Convert cm to px for accurate gap
+    // Convert cm to px for vertical placement above sheet
     function cmToPx(cm){
       const probe = document.createElement('div');
       probe.style.position='absolute';
@@ -830,7 +838,7 @@
       document.body.removeChild(probe);
       return px;
     }
-    const GAP_CM = 8.5; // profit card gap above share sheet
+    const GAP_CM = 8.5; // change this if you need a different profit-card gap
 
     const elSide = document.getElementById('pcardSide');
     const elLev  = document.getElementById('pcardLev');
@@ -848,7 +856,7 @@
     }
 
     function openProfitCardOverlay(t){
-      // Populate card
+      // Compute with the LATEST live mark at click time
       const pnl = (t.side === 'LONG') ? upnlLong(t.mark, t.entry, t.qty) : upnlShort(t.mark, t.entry, t.qty);
       const roi = roiPct(pnl, t.usedMargin);
 
@@ -897,25 +905,34 @@
     /* ===== INIT ===== */
     (async function init(){
       sizeFeed();
-      let marginBalanceTarget, realizedTodayPct, realizedTodayUSD;
+
+      // Randomize target margin balance
       marginBalanceTarget = Math.round(((BAL_MIN + Math.random()*(BAL_MAX - BAL_MIN)) + Number.EPSILON) * 100) / 100;
-      realizedTodayPct = REALIZED_MIN_PCT + Math.random()*(REALIZED_MAX_PCT - REALIZED_MIN_PCT);
-      realizedTodayUSD = marginBalanceTarget * (realizedTodayPct/100);
+
+      // >>> Today’s realized PNL in absolute USD between 2,500 and 8,000, then percent derived from margin balance
+      realizedTodayUSD = Math.round((REALIZED_MIN_USD + Math.random()*(REALIZED_MAX_USD - REALIZED_MIN_USD)) * 100) / 100;
+      realizedTodayPct = (realizedTodayUSD / marginBalanceTarget) * 100;
 
       initPhotoSlots();
 
+      // Seed positions from real Binance data (6M entry proxy + live mark)
       await seedWithFuturesMark6M();
+
+      // Make sure at least two positions are losses (so win/loss both show)
       forceTwoSmallLossesRandom();
 
+      // Compute top aggregates
       let initialUnreal = 0;
       for (const t of trades) { initialUnreal += (t.side === 'LONG') ? upnlLong(t.mark, t.entry, t.qty) : upnlShort(t.mark, t.entry, t.qty); }
       unrealizedSum = initialUnreal;
       walletBalance = marginBalanceTarget - unrealizedSum;
       refreshTop();
 
+      // Start live updates
       connectFuturesMarkWS();
     })();
 
+    // Initial placeholders
     amountEl.textContent = "Loading…";
     walletEl.textContent = "Loading…";
     unrealEl.textContent = "Loading…";
