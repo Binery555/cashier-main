@@ -1,942 +1,1117 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="si">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-  <title>Futures Assets Mockup — with 6M Trend Profit Cards + Share → (NEW) Extra Compact Profit Card</title>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Binance Signal Group — Admin-Only Chat + Members (100 Countries) + Profit Cards (Real Prices)</title>
 
-  <!-- Fonts & Icons -->
-  <link href="https://db.onlinewebfonts.com/c/d05c19ccecf7003d248c60ffd6b5e8f7?family=Binance+PLEX" rel="stylesheet"/>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+<!-- Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+<link href="https://db.onlinewebfonts.com/c/d05c19ccecf7003d248c60ffd6b5e8f7?family=Binance+PLEX" rel="stylesheet"/>
 
-  <style>
-    :root{
-      --app-w: 375px;
-      --bg-base:#1E2128;
-      --panel-bg:#1e2127;
-      --secondary-bg:#32383e;
-      --text-secondary:#7c828a;
-      --text-green:#3acf87;
-      --text-red:#e04b4a;
-      --btn-bg:#2f3339;
-      --highlight:#f0b90b;
+<style>
+  :root{
+    /* LIGHT THEME */
+    --bg:#e7f9ec;
+    --panel:#ffffff;
+    --panel2:#f4f8fd;
+    --text:#0f172a;
+    --muted:#6b7280;
+    --accent:#2a9df4;
+    --border:#e5edf5;
+    --chip:#e8f3ff;
 
-      /* tiny segmented control sizing */
-      --seg-w: 170px;
-      --seg-h: 24px;
-      --seg-pad: 2px;
-      --seg-gap: 2px;
-      --seg-r: 10px;
-      --seg-thumb-r: 6px;
-      --seg-font: 12px;
+    /* Bubbles */
+    --bubble:#ffffff;
+    --bubble-border:#e6edf5;
+    --bubble-shadow:0 6px 18px rgba(17,24,39,0.06);
 
-      /* keep card gutters logic */
-      --frame-gutter-x: 8px;
-      --card-inset: 2px;
+    /* NEW PROFIT CARD COLORS */
+    --greenNew:#2cbc84;   /* Long label + green numbers */
+    --shortNew:#982a3a;   /* Short label color (NEW) */
 
-      /* photo slot sizes (small) */
-      --slot-top: 16px;
-      --slot-bottom: 14px;
+    /* New profit card bottom line — tuned to the uploaded example */
+    --nx-line-color:#1f1f1f;     /* core line color (very dark grey) */
+    --nx-line-soft:#0000001a;    /* soft fade edges */
+
+    /* Footer PNG micro-adjusts (UPDATED as requested) */
+    --footer-nudge-x: -0.4cm; /* move PNG 0.4cm left */
+    --footer-nudge-y: -0.1cm; /* move PNG 0.1cm up  */
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    margin:0; background:var(--bg); color:var(--text);
+    font-family:Inter, system-ui, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+  }
+  .wrap{display:grid; grid-template-rows:auto 1fr; height:100vh;}
+
+  /* Header */
+  header{position:sticky; top:0; z-index:10; border-bottom:1px solid var(--border); background:var(--panel); padding:8px 12px;}
+  .head-inner{max-width:820px; margin:0 auto; display:flex; align-items:center; justify-content:center; gap:10px;}
+
+  /* UPDATED: use image logo (much bigger) */
+  .logo{
+    width:64px; height:64px;        /* made much larger */
+    flex:0 0 64px;
+    display:grid; place-items:center;
+    border-radius:12px;              /* slight rounding to look neat */
+    background:transparent;
+    overflow:hidden;
+  }
+  .logo img{
+    width:100%; height:100%;
+    object-fit:contain; object-position:center;
+    display:block;
+  }
+
+  .titles{display:flex; flex-direction:column; line-height:1.05; align-items:flex-start}
+  .titles h1{margin:0; font-size:15px; font-weight:700}
+  .titles .sub{color:#6b7280; font-size:12px; margin-top:2px}
+
+  /* Layout */
+  main{display:grid; grid-template-columns:330px 1fr; gap:0; min-height:0;}
+  aside{grid-column:1; border-right:1px solid var(--border); background:var(--panel); display:flex; flex-direction:column; min-height:0}
+  .chat{grid-column:2; display:flex; flex-direction:column; min-height:0;}
+  .chat-head{padding:6px 16px; border-bottom:1px solid var(--border); background:var(--panel2); min-height:1px}
+  .chat-scroll{flex:1; overflow:auto; padding:16px; background:
+      radial-gradient(1200px 400px at 20% -10%, rgba(42,157,244,0.08), transparent 50%),
+      linear-gradient(180deg, #f6fbff, var(--bg)); position:relative;}
+
+  /* Top loader */
+  .top-loader{position:sticky; top:0; left:0; right:0; display:flex; align-items:center; justify-content:center; padding:8px 10px; margin:-16px -16px 8px -16px; background:linear-gradient(180deg, rgba(255,255,255,0.95), rgba(255,255,255,0.75)); border-bottom:1px solid var(--border); z-index:3;}
+  .top-loader[hidden]{display:none;}
+  .spin{width:16px; height:16px; border-radius:50%; border:2px solid #c8ddff; border-top-color:#2563eb; animation:sp 0.8s linear infinite;}
+  @keyframes sp{to{transform:rotate(360deg)}}
+
+  /* Bubble */
+  .bub{max-width:74%; margin:10px 0; padding:12px 14px; border-radius:16px; line-height:1.4; font-size:14px; border:1px solid var(--bubble-border); background:var(--bubble); box-shadow:var(--bubble-shadow);}
+  .bub.admin{margin-left:auto}
+  .bub .meta{font-size:11px; color:var(--muted); margin-top:6px; text-align:right}
+  .bub.admin:has(.nx-card), .bub.admin:has(.pcard), .bub.admin:has(img.msg-photo){background:transparent; border:none; box-shadow:none; padding:0;}
+  .bub.admin:has(.nx-card) .meta, .bub.admin:has(.pcard) .meta, .bub.admin:has(img.msg-photo) .meta{padding-top:6px}
+
+  /* >>> Shift ALL profit cards ~3cm to the LEFT (requested) */
+  .bub.admin:has(.nx-card),
+  .bub.admin:has(.pcard),
+  .bub.admin:has(img.msg-photo){
+    transform: translateX(-3cm);
+  }
+
+  /* Members */
+  .aside-head{padding:12px; border-bottom:1px solid var(--border); display:grid; gap:10px; background:var(--panel)}
+  .search{display:flex; gap:8px}
+  .search input{flex:1; background:#f3f8ff; border:1px solid var(--border); color:var(--text); border-radius:12px; padding:10px 12px; outline:none;}
+  .members{overflow:auto; padding:8px 8px 14px; background:var(--panel)}
+  .row{display:grid; grid-template-columns:42px 1fr auto; gap:10px; align-items:center; padding:8px; border-radius:12px; border:1px solid var(--border); background:#ffffff; margin-bottom:8px}
+  .av{width:42px; height:42px; border-radius:50%; display:grid; place-items:center; font-weight:800; color:#ffffff; border:1px solid rgba(0,0,0,.06); letter-spacing:.3px; overflow:hidden;}
+  .av img{width:100%; height:100%; object-fit:cover; display:block}
+  .name{font-weight:600; font-size:13px}
+  .status{display:inline-flex; align-items:center; gap:6px; font-size:12px; font-weight:600; padding:4px 10px; border-radius:999px; border:1px solid var(--border); background:#f8fbff; color:#1f2937;}
+  .dot{width:8px; height:8px; border-radius:999px; display:inline-block}
+  .online .dot{background:#10b981} .offline .dot{background:#9ca3af}
+
+  /* Mobile layout + Trigger behavior */
+  .m-trigger{
+    display:none;                     /* hidden on PC */
+    align-items:center; gap:8px;
+    padding:10px 12px; border-radius:10px;
+    border:1px solid var(--border); background:#e9f4ff;
+    font-weight:700; font-size:14px; color:#0f172a;
+  }
+  .m-trigger svg{width:18px;height:18px;opacity:.9}
+
+  @media (max-width: 980px){
+    main{grid-template-columns:1fr}
+    aside{order:-1}
+
+    /* show trigger on mobile */
+    .m-trigger{display:inline-flex}
+
+    /* collapsed state (default on mobile): only show the trigger strip;
+       expand on click to reveal search + members */
+    aside.collapsed .search,
+    aside.collapsed .members{
+      display:none;
     }
-
-    *{margin:0;padding:0;box-sizing:border-box}
-    html,body{height:100%}
-    body{
-      background:var(--bg-base);
-      display:flex;justify-content:center;align-items:flex-start;
-      padding:0;min-height:100vh;color:#E1E3E8
-    }
-    .app{
-      width:var(--app-w);max-width:100%;
-      background:var(--bg-base);color:#E1E3E8;
-      border:none;border-radius:0;overflow:visible;position:relative;
-      padding:12px var(--frame-gutter-x) 80px;
-      font-family:"Segoe UI",Roboto,sans-serif
-    }
-    .amount,.value,.rate{font-family:"Binance PLEX",sans-serif!important}
-    button{cursor:pointer;border:none;background:transparent;font:inherit;color:inherit}
-
-    /* ====== TOP BAR STACK (fixed / non-scrolling) ====== */
-    .top-stack{ position:sticky; top:0; z-index:30; background:var(--bg-base); padding-bottom:8px; margin-bottom:8px; }
-
-    /* ===== Exchange / Wallet segmented control (small) ===== */
-    .top-toggle{
-      position:relative;width:var(--seg-w);
-      margin:2px auto 6px;padding:var(--seg-pad);
-      background:#20242c;border:1px solid #343a40;border-radius:var(--seg-r);
-      display:grid;grid-template-columns:1fr 1fr;gap:var(--seg-gap);
-    }
-    .top-toggle .seg-thumb{
-      position:absolute;top:var(--seg-pad);bottom:var(--seg-pad);left:var(--seg-pad);
-      width:calc(50% - var(--seg-gap));
-      background:#2b303a;border:1px solid #3f4652;border-radius:var(--seg-thumb-r);
-      box-shadow:inset 0 0 0 1px rgba(255,255,255,.02),0 2px 8px rgba(0,0,0,.35);
-      transition:transform .25s ease;transform:translateX(0%);
-    }
-    .top-toggle .toggle-btn{ position:relative;z-index:1;height:var(--seg-h);line-height:var(--seg-h); padding:0 8px;font-size:var(--seg-font);font-weight:700;color:#9ba3af;border-radius:var(--seg-thumb-r); letter-spacing:.2px; }
-    .top-toggle .toggle-btn.active{ color:#fff; }
-
-    /* ===== Upper navs ===== */
-    .main-nav{display:flex;justify-content:flex-start;gap:10px;margin:2px 0 6px 0}
-    .main-nav button{padding:8px 6px;font-size:13px;color:#A1A6B0}
-    .main-nav button.active{color:#FFF;border-bottom:2px solid #FFF}
-    .main-nav button:first-child{ margin-left:-6px; }
-
-    .sub-toggle{display:flex;gap:6px;margin:8px 0 0 0}
-    .sub-toggle .toggle-btn{padding:4px 8px;font-size:11px;color:#A1A6B0;border-radius:6px;background:transparent;}
-    .sub-toggle .toggle-btn.active{background:#323742;color:#FFF}
-
-    /* ===== Other panels ===== */
-    .balance-panel{margin:12px 0}
-    .balance-header{display:flex;justify-content:space-between;align-items:center;color:#A1A6B0;font-size:12px}
-    .balance-header span{display:flex;align-items:center;gap:10px}
-    .balance-amount{display:flex;align-items:flex-end;margin:8px 0}
-    .amount{font-size:28px;font-weight:600}
-    .currency{margin-left:8px;color:#A1A6B0;font-size:12px}
-    .realized-pnl{color:#A1A6B0;font-size:12px}
-    .realized-pnl .gain{color:var(--text-green);font-weight:700}
-
-    .small-balances{display:flex;margin-top:12px;justify-content:space-between}
-    .small-item{display:flex;flex-direction:column}
-    .small-item .label{color:#A1A6B0;font-size:12px}
-    .small-item .value{font-size:14px;font-weight:600;margin-top:4px}
-
-    .actions{display:flex;margin:14px 0}
-    .btn{flex:1;padding:8px 0;font-size:13px;margin:0 4px;border-radius:6px;background:#323742;color:#A1A6B0}
-    .btn.primary,.btn.active{background:#F3BA2F;color:#1E2128}
-
-    /* ===== Positions/Assets bar ===== */
-    .sub-nav-2{
-      position:sticky; top:12px; z-index:20;
-      display:flex;align-items:flex-end;gap:16px;margin:0 0 8px 0;
-      background:linear-gradient(var(--bg-base), var(--bg-base));
-      padding-top:6px;
-    }
-    .sub-nav-2 button{position:relative;padding:0 6px 8px;font-size:14px;font-weight:700;letter-spacing:.1px;color:var(--text-secondary);line-height:1;font-family:"Binance PLEX","Segoe UI",Roboto,sans-serif}
-    .sub-nav-2 button.active{color:#fff}
-
-    /* ===== PROFITS LIST ===== */
-    .feed{
-      overflow-y:auto; overscroll-behavior-y: contain;
-      padding:12px 0 20px; background:var(--bg-base);
-      scrollbar-width:none;
-    }
-    .feed::-webkit-scrollbar{display:none}
-
-    .empty-state{margin:0 0;background:var(--panel-bg);border-radius:10px;padding:20px;text-align:center;border:1px solid #2b2f36}
-    .empty-state i{font-size:28px;opacity:.9;margin-bottom:10px;display:inline-block}
-    .empty-state h4{font-size:14px;margin-bottom:6px}
-    .empty-state p{font-size:12px;color:#A1A6B0;margin-bottom:12px}
-    .empty-state .cta{background:#F3BA2F;color:#1E2128;font-size:12px;padding:8px 12px;border-radius:6px;display:inline-flex;align-items:center;gap:6px}
-
-    /* ====== PROFITS CARD (list item) ====== */
-    .trade-panel { background: var(--panel-bg); padding: 12px; border-radius: 8px; border: none; box-shadow: none;
-      margin-left:calc(-1 * (var(--frame-gutter-x) - var(--card-inset)));
-      margin-right:calc(-1 * (var(--frame-gutter-x) - var(--card-inset)));
-    }
-    .trade-panel + .trade-panel{margin-top:8px}
-    .trade-panel .header { display: flex; align-items: center; margin-bottom: 8px; }
-    .icon-buy, .icon-sell { color: #fff; width: 20px; height: 20px; display:flex;align-items:center;justify-content:center;
-      font-size: 12px; font-weight: 700; margin-right: 8px; border-radius: 2px; }
-    .icon-buy { background: var(--text-green); }
-    .icon-sell { background: var(--text-red); }
-    .symbol { font-size: 14px; font-weight: 600; margin-right: 6px; color:#fff; }
-    .tag { background: var(--secondary-bg); color: var(--text-secondary); font-size: 10px; padding: 1px 4px; margin-right: 4px; text-transform: uppercase; border-radius: 3px; }
-    .exclamations { display: flex; margin-left: 6px; }
-    .exclamations span { position: relative; width: 2px; height: 10px; background: var(--secondary-bg); margin: 0 1px; border-radius: 1px; transition: background 0.3s ease; }
-    .exclamations span::after { content: ''; position: absolute; bottom: -3px; left: 50%; transform: translateX(-50%); width: 2px; height: 2px; background: inherit; border-radius: 50%; }
-    .exclamations span.green, .exclamations span.green::after { background: var(--text-green); }
-    .share { margin-left: auto; color: var(--text-secondary); font-size: 16px; cursor: pointer; }
-
-    .content-columns { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 8px; gap: 8px; }
-    .column { display: flex; flex-direction: column; }
-    .column.right { text-align: right; }
-    .stat { margin-bottom: 8px; }
-    .label { font-size: 12px; color: var(--text-secondary); border-bottom: 1px dotted var(--text-secondary); padding-bottom: 2px; display: inline-block; }
-    .label.no-line { border-bottom: none; }
-    .value { font-size: 14px; font-weight: 400; color: #fff; transition: all 0.2s ease; }
-    .value.green, .value.percent.green { color: var(--text-green); font-size: 20px; font-weight: 800; }
-    .value.red, .value.percent.red { color: var(--text-red); font-size: 18px; font-weight: 700; }
-    .margin-ratio-value { font-size: 12px !important; }
-
-    .tp-actions{display:flex;justify-content:space-between;gap:8px;margin-top:2px}
-    .tp-btn{flex:1;background:var(--btn-bg);color:#fff;border:none;border-radius:6px;padding:6px 0;font-size:12px;cursor:pointer;transition:background .3s}
-    .tp-btn:hover{background:var(--secondary-bg)}
-
-    /* ===== Bottom nav ===== */
-    .bottom-nav{
-      position:fixed;bottom:0;left:50%;transform:translateX(-50%);
-      width:var(--app-w);background:#2A2F3A;display:flex;padding:8px 0;
-      border-top:1px solid #3a3f49; z-index:40;
-    }
-    .bottom-nav button{flex:1;display:flex;flex-direction:column;align-items:center;font-size:10px;color:#A1A6B0}
-    .bottom-nav button.active{color:#FFF}
-
-    /* ===== Photo slots (no frame) ===== */
-    .photo-slot{
-      width:var(--slot-top); height:var(--slot-top);
-      display:inline-block; position:relative; overflow:hidden; border:none; outline:none;
-      background:transparent; border-radius:4px;
-    }
-    .photo-slot--bottom{ width:var(--slot-bottom); height:var(--slot-bottom); border-radius:3px; }
-    .photo-slot input[type="file"]{ position:absolute; inset:0; opacity:0; cursor:pointer; }
-    .photo-slot img{ width:88%; height:88%; margin:6%; object-fit:cover; display:block; background:transparent; }
-    .photo-slot--bottom img{ width:90%; height:90%; margin:5%; object-fit:cover; display:block; }
-    .photo-empty::after{ content:''; position:absolute; inset:0; background:transparent; }
-
-    /* ====== SHARE OVERLAY (container only) ====== */
-    .overlay{
-      position:fixed; inset:0; z-index:100; display:none;
-      background:rgba(0,0,0,.55); backdrop-filter:saturate(120%) blur(2px);
-    }
-    .overlay.show{ display:block; }
-
-    /* Profit card wrapper → absolutely positioned above the share sheet */
-    .overlay-card-wrap{
-      position:absolute; left:50%; transform:translate(-50%,0);
-      opacity:0; transition:transform .25s ease, opacity .25s ease;
-    }
-    .overlay.show .overlay-card-wrap{ opacity:1; transform:translate(-50%,0); }
-
-    /* ===== NEW Profit Card ===== */
-    .pcard{
-      max-width: 300px;
-      width: min(90vw, 300px);
-      background: url('https://iili.io/KKAe9kv.md.gif') center/cover no-repeat;
-      color:#fff;
-      border-radius:8px;
-      padding:0.5cm 14px;
+    aside{
       position:relative;
-      box-shadow:0 0 10px rgba(0,0,0,.45);
-      font-family:"Binance PLEX","Segoe UI",Arial,sans-serif;
-      font-variant-numeric: tabular-nums;
-      overflow:hidden;
+      z-index:20;
+      border-right:0;
+      border-bottom:1px solid var(--border);
     }
-    .pcard .inner { transform: translateX(0.55cm); }
-    .pcard .header{ display:flex;align-items:flex-start;gap:3px;margin-bottom:0.35cm; transform: translateX(-0.5cm); }
-    .pcard .binance-logo{width:11px;height:11px;margin-top:-1px;}
-    .pcard .text-block{display:flex;flex-direction:column;margin-top:-1px;}
-    .pcard .binance-text{font-weight:800;font-size:.45rem;color:#f0b90b;letter-spacing:.25px;}
-    .pcard .futures-text{font-size:.5rem;color:#fff;font-weight:700;line-height:1;}
-    .pcard .trade-info{margin:4px 0;font-size:.45rem;font-weight:600;display:flex;gap:0.25cm;}
-    .pcard .short{color:#ff4d6b;} 
-    .pcard .long{color:#3acf87;}
-    .pcard .percentage{font-size:1.2rem;font-weight:800;margin:5px 0;}
-    .pcard .percentage.green{color:#00c292; font-size:1.35rem; font-weight:900;}
-    .pcard .percentage.red{color:#ff4d6b;}
-    .pcard .price-section{margin:5px 0 6px;}
-    .pcard .price-line{display:flex;justify-content:flex-start;gap:5px;margin-bottom:2px;}
-    .pcard .price-label{color:#ccc;font-size:.45rem;width:65px;font-weight:600;}
-    .pcard .price-value{color:#f0b90b;font-weight:800;font-size:.55rem;margin-left:12px;}
-    .pcard .referral-section{display:flex;align-items:center;gap:6px;margin-top:0.25cm;}
-    .pcard .qr{width:24px;height:24px;}
-    .pcard .ref-text{font-size:.42rem;color:#ddd;font-weight:600;}
-    .pcard .referral-code{font-weight:800;font-size:.55rem;letter-spacing:.2px;}
-    .pcard .app-text{font-size:.42rem;color:#f0b90b;margin-top:0;font-weight:700;}
+  }
 
-    /* ===== Share sheet (bottom) ===== */
-    .share-menu{
-      position:absolute; left:50%; bottom:0; transform:translateX(-50%);
-      width:var(--app-w);
-      background-color:#2a2b34;
-      border-top-left-radius:16px; border-top-right-radius:16px;
-      padding:20px 0 10px;
-      box-shadow:0 -4px 20px rgba(0,0,0,0.4);
-    }
-    .icon-row{ display:flex; justify-content:space-around; padding:0 10px; margin-bottom:20px; flex-wrap:wrap; }
-    .share-item{ display:flex; flex-direction:column; align-items:center; color:#cfcfd2; font-size:14px; width:64px; margin:10px 0; }
-    .share-icon{ width:56px; height:56px; background-color:#3b3c45; border-radius:50%; display:flex; align-items:center; justify-content:center; margin-bottom:8px; font-size:22px; }
-    .cancel-btn{ text-align:center; padding:14px 0; font-size:16px; color:#cfcfd2; border-top:1px solid #3d3e48; }
-    .instagram-icon{ background: radial-gradient(circle at 30% 30%, #fdf497 0%, #fd5949 45%, #d6249f 60%, #285AEB 90%); color:#fff; }
-  </style>
+  /* ---- OLD Profit Card (kept) ---- */
+  .pcard{
+    max-width:300px; width:min(90vw,300px);
+    background:url('https://iili.io/KKAe9kv.md.gif') center/cover no-repeat;
+    color:#fff; border-radius:10px; padding:0.5cm 14px; position:relative; overflow:hidden;
+    box-shadow:0 8px 40px rgba(0,0,0,.25);
+    font-family:"Binance PLEX","Segoe UI",Arial,sans-serif;
+    font-variant-numeric:tabular-nums;
+  }
+  .pcard .inner{ transform:translateX(0.55cm); }
+  .pcard .header{ display:flex; align-items:flex-start; gap:4px; margin-bottom:0.35cm; transform:translateX(-0.5cm); }
+  .pcard .binance-logo{ width:11px; height:11px; margin-top:2px; }
+  .pcard .text-block{ display:flex; flex-direction:column; margin-top:1px; }
+  .pcard .binance-text{ font-weight:800; font-size:.45rem; color:#f0b90b; letter-spacing:.25px; }
+  .pcard .futures-text{ font-size:.5rem; color:#fff; font-weight:700; line-height:1; }
+  .pcard .trade-info{ margin:4px 0; font-size:.45rem; font-weight:600; display:flex; gap:0.25cm; }
+  .pcard .short{ color:#ff4d6b; } .pcard .long{ color:#00c292; }
+  .pcard .percentage{ font-size:1.2rem; font-weight:900; margin:5px 0; }
+  .pcard .percentage.green{ color:#00c292; font-size:1.35rem; }
+  .pcard .percentage.red{ color:#ff4d6b; }
+  .pcard .price-section{ margin:5px 0 6px; }
+  .pcard .price-line{ display:flex; justify-content:flex-start; gap:5px; margin-bottom:2px; }
+  .pcard .price-label{ color:#ccc; font-size:.45rem; width:65px; font-weight:700; }
+  .pcard .price-value{ color:#f0b90b; font-weight:800; font-size:.55rem; margin-left:12px; }
+  .pcard .referral-section{ display:flex; align-items:center; gap:6px; margin-top:0.25cm; }
+  .pcard .qr{ width:24px; height:24px; border-radius:4px; border:1px solid rgba(255,255,255,.18); object-fit:cover; }
+  .pcard .ref-text{ font-size:.42rem; color:#ddd; font-weight:600; }
+  .pcard .referral-code{ font-weight:800; font-size:.55rem; letter-spacing:.2px; }
+  .pcard .app-text{ font-size:.42rem; color:#f0b90b; margin-top:0; font-weight:700; }
+
+  /* ---- NEW Profit Card ---- */
+  .nx-card{
+    width:320px; border-radius:16px; overflow:hidden;
+    background:#111 center/cover no-repeat;
+    border:2px solid #2e2e2e; box-shadow:0 8px 24px rgba(0,0,0,.25);
+    color:#fff; font-family:Inter, system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+    will-change: background-image;
+  }
+  .nx-header{ padding:16px; display:flex; align-items:center; gap:12px; margin-bottom:calc(16px + 1cm); }
+  .nx-av{ width:34px; height:34px; aspect-ratio:1/1; border-radius:50%; overflow:hidden; flex:0 0 34px; box-shadow:0 0 0 2px rgba(255,255,255,.08); display:grid; place-items:center; background:#000; --av-shift: 0.004cm; }
+  .nx-av img{ width:100%; height:100%; display:block; object-fit:cover; object-position:center; border-radius:50%; transform: translateY(var(--av-shift)); will-change: transform; }
+  .nx-user{ display:flex; flex-direction:column; line-height:1.1; }
+  .nx-name{ font-weight:600; font-size:15px; }
+  .nx-time{ font-size:11px; opacity:.9; display:block; margin-top:0.08cm; transform: translateY(0.02cm); }
+  .nx-body{ padding:0 16px calc(20px + 1cm); }
+  .nx-title{ font-size:16px; font-weight:800; text-transform:uppercase; letter-spacing:.2px; }
+
+  /* ↓↓↓ MATCH SIZES: Long/Short + Leverage = Entry Price label size (11px) */
+  .nx-pos{ margin:6px 0 10px; display:inline-flex; align-items:center; gap:10px; font-size:11px; font-weight:600; }
+  .nx-pos .nx-short{ color:var(--shortNew); }
+  .nx-pos .nx-long{ color:var(--greenNew); }
+  .nx-div{ width:1px; height:12px; background:#6a6a6a; display:inline-block; }
+  .nx-lev{ color:#8c9692; font-size:inherit; }
+
+  .nx-pnl{ display:flex; align-items:baseline; gap:8px; margin:6px 0 8px; }
+  .nx-usd,.nx-roi{ font-size:32px; font-weight:800; letter-spacing:-.4px; }
+  .nx-u,.nx-percent{ font-size:16px; font-weight:700; }
+  .posG{ color:var(--greenNew); }
+  .posR{ color:#ff6b6b; }
+
+  /* ↓↓↓ Entry/Last prices slightly lower */
+  .nx-prices{ position:relative; display:flex; justify-content:space-between; gap:16px; font-size:12px; margin-top:6px; }
+  .nx-label{ color:#9a9a9a; font-size:11px; }
+  .nx-value{ color:#fff; }
+  .nx-last{ position:relative; left:-2.6cm; }
+
+  /* Bottom section */
+  .nx-foot{ background:#000; }
+  .nx-line{
+    display:block; width:100%; height:1.5px; margin-top:6px;
+    background:
+      linear-gradient(180deg,
+        var(--nx-line-soft) 0%,
+        var(--nx-line-color) 48%,
+        var(--nx-line-color) 52%,
+        var(--nx-line-soft) 100%);
+  }
+  .nx-footc{ padding:14px 12px; display:flex; align-items:center; justify-content:space-between; gap:12px; }
+
+  /* FOOTER LEFT BLOCK */
+  .nx-id{
+    display:grid;
+    grid-template-columns: 12px 1fr;   /* col 2 = text/image start */
+    grid-template-rows: auto auto;
+    column-gap:8px; row-gap:4px;
+    align-items:start;
+    margin-left:-6px;
+    position:relative;
+  }
+  .nx-footer-img{
+    grid-column: 2/3; grid-row: 1/2;
+    width:100px;
+    height:auto;
+    transform: translate(var(--footer-nudge-x), var(--footer-nudge-y));
+    display:block;
+    filter: drop-shadow(0 0 0 rgba(0,0,0,0));
+  }
+  .nx-ref{
+    grid-column: 2/3; grid-row: 2/3;
+    font-size:11px; line-height:1.1; color:#ffffff; letter-spacing:.1px;
+    display:inline-block;
+    transform: translateX(0.1cm);
+  }
+
+  /* QR */
+  .nx-qr{
+    width:54px; height:54px; background:#fff; border-radius:6px; overflow:hidden; display:block; box-shadow:inset 0 0 0 1px #e5e5e5;
+    transform: translate(-0.1cm, 0);
+  }
+  .nx-qr img{ width:100%; height:100%; object-fit:contain; }
+
+  /* Composer */
+  .composer{ position:sticky; bottom:0; left:0; right:0; background:var(--panel); border-top:1px solid var(--border); padding:8px 12px; display:flex; align-items:center; gap:8px; z-index:5; }
+  .c-emoji{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;border:1px solid var(--border);background:#fff;cursor:pointer}
+  .composer .box{ flex:1; display:flex; align-items:center; gap:8px; background:#f7fbff; border:1px solid var(--border); border-radius:999px; padding:8px 12px; }
+  .composer input[type="text"]{ flex:1; border:none; background:transparent; outline:none; font-size:14px; color:var(--text); }
+  .c-icon{width:22px;height:22px; display:grid; place-items:center; cursor:pointer; opacity:.8}
+  .send{ width:40px;height:40px;border-radius:999px;background:#1da1ff;border:none;color:#fff;font-weight:700;cursor:pointer; display:grid;place-items:center; }
+  .send:active{transform:translateY(1px)}
+
+  /* Manual photo size = profit card width */
+  img.msg-photo{max-width:min(85vw,520px); height:auto; border-radius:14px; display:block}
+  .preview-note{font-size:12px; color:#2563eb; margin-left:6px}
+
+  /* ==== NEW: VIP JOIN badge (fixed top-left, glowing gold) ==== */
+  .vip-badge{
+    position:fixed; top:10px; left:10px; z-index:9999;
+    display:inline-flex; align-items:center; gap:8px;
+    padding:8px 12px; border-radius:999px;
+    background:linear-gradient(135deg,#3b3b3b,#0f0f0f);
+    border:1px solid rgba(255,215,0,.35);
+    box-shadow:0 0 0 2px rgba(0,0,0,.25), 0 0 18px rgba(255,215,0,.35), inset 0 0 12px rgba(255,215,0,.18);
+    color:#ffd700; font-weight:800; letter-spacing:.3px; text-transform:uppercase; font-size:12px;
+    user-select:none; -webkit-user-select:none;
+  }
+  .vip-badge .shine{
+    position:absolute; inset:0; border-radius:999px; pointer-events:none;
+    background:linear-gradient(120deg, transparent 0%, rgba(255,255,255,.35) 45%, transparent 60%);
+    transform:skewX(-20deg) translateX(-120%);
+    animation:vipshine 3s ease-in-out infinite;
+  }
+  @keyframes vipshine{
+    0%{transform:skewX(-20deg) translateX(-120%);}
+    55%{transform:skewX(-20deg) translateX(120%);}
+    100%{transform:skewX(-20deg) translateX(120%);}
+  }
+  .vip-ico{
+    width:18px;height:18px; display:inline-block;
+    filter: drop-shadow(0 0 6px rgba(255,215,0,.55));
+  }
+</style>
+
+<!-- Keep manual-upload photos same width as 320px profit card -->
+<style>
+  .bub.admin:has(img.msg-photo){ max-width: 320px; padding: 0; border: none; background: transparent; box-shadow: none; }
+  img.msg-photo{ width: 320px; max-width: 320px; height: auto; display: block; border-radius: 16px; }
+  @media (max-width: 380px){
+    .bub.admin:has(img.msg-photo){ max-width: 90vw; }
+    img.msg-photo{ width: 90vw; max-width: 90vw; }
+  }
+
+  /* >>> HIDE "Admin" label under manually-uploaded photos ONLY */
+  .bub.admin:has(img.msg-photo) .meta{ display:none !important; }
+</style>
 </head>
 <body>
-  <div class="app">
-    <!-- ===== UPPER (NON-SCROLLING) AREA ===== -->
-    <div class="top-stack" id="topStack">
-      <!-- Segmented control -->
-      <header class="top-toggle" aria-label="Exchange or Wallet">
-        <span class="seg-thumb" aria-hidden="true"></span>
-        <button class="toggle-btn active" type="button">Exchange</button>
-        <button class="toggle-btn" type="button">Wallet</button>
-      </header>
+<!-- ==== NEW: VIP JOIN fixed badge (left-top edge) ==== -->
+<div class="vip-badge" title="Join VIP">
+  <svg class="vip-ico" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+    <path d="M7.5 9l4.5-6 4.5 6 5-2-3 12H5L2.5 7zM8 19h8v2H8z"></path>
+  </svg>
+  <span>VIP JOIN</span>
+  <span class="shine" aria-hidden="true"></span>
+</div>
 
-      <nav class="main-nav" aria-label="Main sections">
-        <button>Overview</button>
-        <button class="active">Futures</button>
-        <button>Spot</button>
-        <button>Funding</button>
-      </nav>
-
-      <div class="sub-toggle" role="tablist" aria-label="Futures type">
-        <button class="toggle-btn active" role="tab" aria-selected="true">USDⓢ-M</button>
-        <button class="toggle-btn" role="tab" aria-selected="false">COIN-M</button>
+<div class="wrap">
+  <!-- Centered Header -->
+  <header>
+    <div class="head-inner" aria-live="polite">
+      <!-- UPDATED: image logo -->
+      <div class="logo">
+        <img src="https://iili.io/KLofm91.jpg" alt="ZYGO logo">
+      </div>
+      <div class="titles">
+        <h1>ZYGO</h1>
+        <div class="sub" id="khMembers">— members</div>
       </div>
     </div>
-    <!-- ===== /UPPER (fixed) ===== -->
+  </header>
 
-    <!-- ===== Balances / Actions / Feed ===== -->
-    <section class="balance-panel" aria-label="Balances">
-      <div class="balance-header">
-        <span>Margin Balance <i id="eyeToggle" class="fas fa-eye" aria-hidden="true"></i></span>
+  <main>
+    <!-- Members (LEFT) -->
+    <aside id="membersPanel" class="collapsed">
+      <div class="aside-head">
+        <!-- Mobile-only TRIGGER above the search bar -->
+        <button id="mTrigger" class="m-trigger" aria-expanded="false" aria-controls="membersPanel">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <line x1="4" y1="6" x2="20" y2="6"></line>
+            <line x1="4" y1="12" x2="20" y2="12"></line>
+            <line x1="4" y1="18" x2="20" y2="18"></line>
+          </svg>
+          Members
+        </button>
 
-        <!-- photo slots -->
-        <span class="icon-group" aria-label="Actions">
-          <label class="photo-slot photo-empty" data-slot="top-reward">
-            <input type="file" accept=".jpg,.jpeg,image/jpeg" capture="environment">
-            <img alt="">
-          </label>
-          <label class="photo-slot photo-empty" data-slot="top-convert">
-            <input type="file" accept=".jpg,.jpeg,image/jpeg" capture="environment">
-            <img alt="">
-          </label>
-          <label class="photo-slot photo-empty" data-slot="top-statement">
-            <input type="file" accept=".jpg,.jpeg,image/jpeg" capture="environment">
-            <img alt="">
-          </label>
-        </span>
-      </div>
-
-      <div class="balance-amount">
-        <span id="amount" class="amount">Loading…</span>
-        <span class="currency">USD <i class="fas fa-chevron-down" aria-hidden="true"></i></span>
-      </div>
-
-      <div class="realized-pnl" id="pnl">
-        Today’s Realized PNL
-        <span id="realizedSpan" class="gain">Loading…</span>
-        <i class="fas fa-chevron-right" aria-hidden="true"></i>
-      </div>
-
-      <div class="small-balances">
-        <div class="small-item">
-          <div class="label">Wallet Balance (USD)</div>
-          <div class="value" id="walletValue">Loading…</div>
+        <div class="search">
+          <input id="search" placeholder="Search members…"/>
         </div>
-        <div class="small-item">
-          <div class="label">Unrealized PNL (USD)</div>
-          <div class="value" id="unrealizedValue">Loading…</div>
+      </div>
+      <div class="members" id="members"></div>
+    </aside>
+
+    <!-- Chat Area -->
+    <section class="chat">
+      <div class="chat-head"></div>
+
+      <div class="chat-scroll" id="chatScroll">
+        <!-- TOP sticky loader (spinner ONLY) -->
+        <div id="topLoader" class="top-loader" role="status" aria-live="polite" hidden>
+          <span class="spin" aria-hidden="true"></span>
         </div>
+      </div>
+
+      <!-- Bottom Message Composer -->
+      <div class="composer">
+        <div class="c-emoji" title="Emoji">😊</div>
+        <div class="box">
+          <input id="msgInput" type="text" placeholder="Message"/>
+          <span class="c-icon" title="Attach">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.44 11.05l-9.19 9.19a6 6 0 1 1-8.49-8.49l10.6-10.6a4 4 0 0 1 5.66 5.66L9.88 17.95a2 2 0 1 1-2.83-2.83l9.19-9.19"/></svg>
+          </span>
+          <span class="c-icon" id="imgBtn" title="Photo">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+          </span>
+          <input id="imgInput" type="file" accept="image/*" hidden>
+          <span id="imgPreviewNote" class="preview-note" hidden>Photo ready to send</span>
+        </div>
+        <button class="send" id="sendBtn" aria-label="Send">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4 20-7z"/></svg>
+        </button>
       </div>
     </section>
+  </main>
+</div>
 
-    <section class="actions" aria-label="Quick actions">
-      <button class="btn primary active">Trade</button>
-      <button class="btn">Swap</button>
-      <button class="btn">Transfer</button>
-    </section>
+<script>
+/* ====================== UTILS ====================== */
+function pick(arr){return arr[Math.floor(Math.random()*arr.length)]}
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+function numberWithCommas(x){return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
 
-    <section class="positions" aria-label="Positions">
-      <nav class="sub-nav-2" id="stickyBar">
-        <button class="active">Positions</button>
-        <button>Assets</button>
-      </nav>
+/* ===== Header count ===== */
+const min = 320000, max = 340000;
+const total = Math.floor(Math.random()*(max-min+1))+min;
+document.getElementById('khMembers').textContent = numberWithCommas(total) + ' members';
 
-      <div class="feed" id="feed">
-        <div class="empty-state" id="emptyState">
-          <i class="fa-solid fa-briefcase"></i>
-          <h4>You have no open positions</h4>
-          <p>Start a trade to see it listed here in real-time.</p>
-          <button class="cta"><i class="fa-solid fa-plus"></i> Open a Trade</button>
+/* ====================== TIMEZONE: Asia/Colombo ====================== */
+const TZ = 'Asia/Colombo';
+function ymdColombo(d){
+  return new Intl.DateTimeFormat('en-CA',{timeZone:TZ,year:'numeric',month:'2-digit',day:'2-digit'}).format(d);
+}
+function colomboMidnightBounds(dateLike){
+  const d = new Date(dateLike);
+  const parts = ymdColombo(d).split('-'); // YYYY-MM-DD
+  const y = +parts[0], m = +parts[1]-1, day = +parts[2];
+  const atColombo = new Date(Date.UTC(y,m,day,0,0,0));
+  const offMin = -new Date(atColombo.toLocaleString('en-US',{timeZone:TZ})).getTimezoneOffset();
+  const startUTC = new Date(Date.UTC(y,m,day,0,0,0) - (offMin*60000));
+  const endUTC   = new Date(startUTC.getTime() + 86400000 - 1);
+  return {startUTC, endUTC};
+}
+function todayColomboYMD(){ return ymdColombo(new Date()); }
+
+/* ====================== PHOTO GROUPS (de-duplicated) ====================== */
+const PH_G1 = Array.from(new Set([
+  "https://iili.io/K6t61ln.jpg","https://iili.io/K6t4Naa.jpg","https://iili.io/K6tUy6g.jpg","https://iili.io/K6tUThP.jpg",
+  "https://iili.io/K6t8ESR.jpg","https://iili.io/K6tvh4j.jpg","https://iili.io/K6tkVgR.jpg","https://iili.io/K6tOgCG.jpg",
+  "https://iili.io/K6twpDu.jpg","https://iili.io/K6twaMx.jpg","https://iili.io/K6tw2yX.jpg","https://iili.io/K6tj0pn.jpg",
+  "https://iili.io/K6thQs4.jpg","https://iili.io/K6tXmNa.jpg","https://iili.io/K6tW51S.jpg"
+]));
+const PH_G2 = Array.from(new Set([
+  "https://iili.io/K6bItu1.jpg","https://iili.io/K6bzb14.jpg","https://iili.io/K6bz7JS.jpg","https://iili.io/K6bxkKl.jpg",
+  "https://iili.io/K6bxzFV.jpg","https://iili.io/K6boUZJ.jpg","https://iili.io/K6bon2I.jpg","https://iili.io/K6bnkXf.jpg",
+  "https://iili.io/K6bCQKN.jpg","https://iili.io/K6bCA9n.jpg","https://iili.io/K6bBDjj.jpg","https://iili.io/K6bBYrP.jpg",
+  "https://iili.io/K6bqV07.jpg","https://iili.io/K6bfsPS.jpg","https://iili.io/K6bKl7s.jpg","https://iili.io/K6bFRUu.jpg",
+  "https://iili.io/K6b3anI.jpg","https://iili.io/K6b2AL7.jpg","https://iili.io/K6bdSfe.jpg","https://iili.io/K6bJPnt.jpg",
+  "https://iili.io/K6Df3Ja.jpg","https://iili.io/K6DKEAv.jpg","https://iili.io/K6D298x.jpg","https://iili.io/K6Ddf2f.jpg",
+  "https://iili.io/K6DJXbS.jpg"
+]));
+const PH_G3 = Array.from(new Set([
+  "https://iili.io/K6mC7Xj.jpg","https://iili.io/K6mBEDG.jpg","https://iili.io/K6mqbFS.jpg","https://iili.io/K6mq5ve.jpg",
+  "https://iili.io/K6mfrIj.jpg","https://iili.io/K6m3vdg.jpg","https://iili.io/K6m3uef.jpg","https://iili.io/K6m2jln.jpg",
+  "https://iili.io/K6mdF2a.jpg","https://iili.io/K6mJAbV.jpg","https://iili.io/K6mHkNV.jpg","https://iili.io/K6m9qp2.jpg",
+  "https://iili.io/K6by6LF.jpg","https://iili.io/K6byqWF.jpg","https://iili.io/K6bpYcx.jpg"
+]));
+const PH_G4 = Array.from(new Set([
+  "https://iili.io/K6mghCB.jpg","https://iili.io/K6mUUq7.jpg","https://iili.io/K6mUKle.jpg","https://iili.io/K6mSIFn.jpg",
+  "https://iili.io/K6m80YJ.jpg","https://iili.io/K6mvGs9.jpg","https://iili.io/K6mkLPe.jpg","https://iili.io/K6mkfu2.jpg",
+  "https://iili.io/K6meWQ9.jpg","https://iili.io/K6mOpgj.jpg","https://iili.io/K6mOIVe.jpg","https://iili.io/K6mNM8l.jpg",
+  "https://iili.io/K6mNd3x.jpg","https://iili.io/K6mwO2R.jpg","https://iili.io/K6mwB1f.jpg","https://iili.io/K6mjUfj.jpg",
+  "https://iili.io/K6mjaRI.jpg","https://iili.io/K6mhI3l.jpg"
+]));
+
+/* consume once helpers */
+function popOne(list){ if(!list.length) return null; return list.splice(Math.floor(Math.random()*list.length),1)[0]; }
+
+/* ====================== NAME POOLS ====================== */
+const SL_Boys_First = ["Kasun","Nimal","Tharindu","Supun","Sahan","Harsha","Dinuka","Isuru","Chathura","Ravindu","Shehan","Gayan","Pasindu","Udara","Lahiru"];
+const IN_Boys_First = ["Arjun","Rohit","Rahul","Aman","Vikram","Karan","Sahil","Aditya","Vijay","Rakesh","Ankur","Manish","Arnav","Kabir","Dev"];
+const IN_PK_Girls_First = ["Priya","Ananya","Aisha","Zoya","Meera","Kiran","Sana","Riya","Nisha","Hina","Iqra","Mira","Pooja","Simran","Alina"];
+const VN_First = ["Ngoc","Anh","Linh","Trang","Huong","Phuong","Thao","Quynh","Duc","Huy","Minh","Nam","Tuan","Hang","My"];
+const RU_First = ["Ivan","Dmitry","Sergei","Alexey","Nikolai","Anna","Olga","Svetlana","Maria","Elena","Yuri","Tatiana","Viktor","Artem","Polina"];
+const UK_First = ["James","Oliver","Harry","George","Jack","Charlie","Amelia","Isla","Ava","Olivia","Emily","Noah","Sophia","Mia","Lucas"];
+
+const SL_Last = ["Perera","Silva","Fernando","Jayasinghe","Bandara","Wijesinghe","Gunasekara","Senanayake","Ekanayake","Karunaratne"];
+const IN_Last = ["Kumar","Sharma","Verma","Gupta","Singh","Reddy","Iyer","Patel","Khan","Das"];
+const PK_Last = ["Ahmed","Hussain","Malik","Khan","Shah","Ali","Raza","Siddiqui","Chaudhry","Farooq"];
+const VN_Last = ["Nguyen","Tran","Le","Pham","Hoang","Pham","Bui","Vo","Dang","Do"];
+const RU_Last = ["Ivanov","Smirnov","Kuznetsov","Popov","Sokolov","Volkov","Fedorov","Mikhailov","Orlov","Pavlov"];
+const UK_Last = ["Smith","Johnson","Brown","Taylor","Wilson","Davies","Evans","Thomas","Roberts","Walker"];
+
+/* fallback mixed pools */
+const OTHER_First = ["Diego","Luca","Marco","Sven","Marta","Aiko","Yuna","Jin","Lucas","Theo","Liam","Chloe","Nora","Milan","Zara","Hassan","Yara"];
+const OTHER_Last  = ["Garcia","Rossi","Muller","Hansen","Novak","Santos","Costa","Lee","Kim","Nguyen","Park","Kaya","Yilmaz"];
+
+/* unique name registry */
+const usedNames = new Set();
+function uniqueJoin(first, last){
+  let full = `${first} ${last}`;
+  if(!usedNames.has(full)){ usedNames.add(full); return full; }
+  let n = 2;
+  while(usedNames.has(`${full} ${n}`)) n++;
+  full = `${full} ${n}`;
+  usedNames.add(full);
+  return full;
+}
+
+/* generators by group */
+function nameFromGroup(group){
+  switch(group){
+    case 1:{ // SL + IN boys
+      const isSL = Math.random()<0.5;
+      const f = isSL ? pick(SL_Boys_First) : pick(IN_Boys_First);
+      const l = isSL ? pick(SL_Last) : pick(IN_Last);
+      return uniqueJoin(f,l);
+    }
+    case 2:{ // IN + PK girls
+      const isIN = Math.random()<0.5;
+      const f = pick(IN_PK_Girls_First);
+      const l = isIN ? pick(IN_Last) : pick(PK_Last);
+      return uniqueJoin(f,l);
+    }
+    case 3:{ // Vietnam
+      return uniqueJoin(pick(VN_First), pick(VN_Last));
+    }
+    case 4:{ // Russian + UK
+      const isRU = Math.random()<0.5;
+      const f = isRU ? pick(RU_First) : pick(UK_First);
+      const l = isRU ? pick(RU_Last)  : pick(UK_Last);
+      return uniqueJoin(f,l);
+    }
+    default:{
+      const pools = [
+        ()=>uniqueJoin(pick(SL_Boys_First), pick(SL_Last)),
+        ()=>uniqueJoin(pick(IN_Boys_First), pick(IN_Last)),
+        ()=>uniqueJoin(pick(IN_PK_Girls_First), pick(PK_Last)),
+        ()=>uniqueJoin(pick(VN_First), pick(VN_Last)),
+        ()=>uniqueJoin(pick(RU_First), pick(RU_Last)),
+        ()=>uniqueJoin(pick(UK_First), pick(UK_Last)),
+        ()=>uniqueJoin(pick(OTHER_First), pick(OTHER_Last))
+      ];
+      return pick(pools)();
+    }
+  }
+}
+
+/* ====================== MEMBERS BUILD (1–3 photos per 10) ====================== */
+const members = [];
+const seedCount = 1200;
+
+/* Per 10 members, pick 1..3 photo slots at random (no duplicates) */
+const photoIndices = new Set();
+for(let base=0; base<seedCount; base+=10){
+  const countInBlock = 1 + Math.floor(Math.random()*3); // 1..3
+  const slots = new Set();
+  while(slots.size < countInBlock){
+    slots.add(base + Math.floor(Math.random()*10));
+  }
+  slots.forEach(i=>photoIndices.add(i));
+}
+
+/* Build members with mapping rules */
+for(let i=0;i<seedCount;i++){
+  const hasPhoto = photoIndices.has(i);
+  let name, photoUrl = null;
+
+  if(hasPhoto){
+    const groupsAvailable = [];
+    if(PH_G1.length) groupsAvailable.push(1);
+    if(PH_G2.length) groupsAvailable.push(2);
+    if(PH_G3.length) groupsAvailable.push(3);
+    if(PH_G4.length) groupsAvailable.push(4);
+
+    if(groupsAvailable.length){
+      const g = pick(groupsAvailable);
+      name = nameFromGroup(g);
+      if(g===1) photoUrl = popOne(PH_G1);
+      else if(g===2) photoUrl = popOne(PH_G2);
+      else if(g===3) photoUrl = popOne(PH_G3);
+      else photoUrl = popOne(PH_G4);
+    }else{
+      name = nameFromGroup(0);
+    }
+  }else{
+    name = nameFromGroup(0);
+  }
+
+  const status = Math.random()<0.55 ? 'online' : 'offline';
+  members.push({ id:i+1, name, status, photoUrl });
+}
+
+/* ====== Renderers ====== */
+const membersEl = document.getElementById('members');
+const searchEl  = document.getElementById('search');
+let viewSlice = 120; const PAGE=60;
+
+function randomAvatarColor(){
+  const hues = [205,150,45,265,10,185,95,320,25,140];
+  const h = pick(hues), s = 75 + Math.floor(Math.random()*15), l = 52 + Math.floor(Math.random()*6);
+  return `hsl(${h} ${s}% ${l}%)`;
+}
+function initialsFrom(name){
+  const parts = name.trim().split(/\s+/);
+  return ((parts[0]?.[0]||'') + (parts[1]?.[0]||'')).toUpperCase() || 'U';
+}
+
+function renderMembers(){
+  const q = searchEl.value.toLowerCase().trim();
+  const filtered = members.filter(m => q ? m.name.toLowerCase().includes(q) : true);
+  const toShow = filtered.slice(0, viewSlice);
+  membersEl.innerHTML = '';
+
+  toShow.forEach(m=>{
+    const row = document.createElement('div'); row.className='row';
+    const badgeCls = m.status === 'online' ? 'online' : 'offline';
+    const avHTML = m.photoUrl
+      ? `<div class="av" aria-hidden="true"><img src="${m.photoUrl}" alt="${m.name} profile"></div>`
+      : `<div class="av" aria-hidden="true" style="background:${randomAvatarColor()}">${initialsFrom(m.name)}</div>`;
+    row.innerHTML = `${avHTML}
+      <div><div class="name">${m.name}</div></div>
+      <div class="status ${badgeCls}"><span class="dot"></span>${m.status==='online'?'Online':'Offline'}</div>`;
+    membersEl.appendChild(row);
+  });
+}
+searchEl.addEventListener('input', ()=>{ viewSlice = 120; renderMembers(); });
+membersEl.addEventListener('scroll', e=>{
+  if (membersEl.scrollTop + membersEl.clientHeight >= membersEl.scrollHeight-20){
+    viewSlice += PAGE; renderMembers();
+  }
+});
+renderMembers();
+
+/* ============================ CHAT / CARDS ============================ */
+const CHAT = document.getElementById('chatScroll');
+const TOP_LOADER = document.getElementById('topLoader');
+const DOM_CAP = 500;
+
+/* ---------- Binance API ---------- */
+const API = {
+  futuresKlines: 'https://fapi.binance.com/fapi/v1/klines',
+  tickerPrice:   'https://fapi.binance.com/fapi/v1/ticker/price',
+  ping:          'https://fapi.binance.com/fapi/v1/ping'
+};
+const SYMBOLS = [
+  'BTCUSDT','ETHUSDT','BNBUSDT','SOLUSDT','XRPUSDT','DOGEUSDT','ADAUSDT',
+  'TONUSDT','AVAXUSDT','LINKUSDT','NEARUSDT','MATICUSDT','OPUSDT','ARBUSDT','ATOMUSDT'
+];
+
+/* ---------- Date list: from TODAY (Colombo) back to 2023-03-02 ---------- */
+const CUTOFF = new Date('2023-03-02T00:00:00Z');
+function buildDaysDescendingFromToday(){
+  const days = [];
+  const now = new Date();
+  let {startUTC} = colomboMidnightBounds(now);
+  for (let t=startUTC.getTime(); t>=CUTOFF.getTime(); t-=86400000){
+    days.push(new Date(t));
+  }
+  return days;
+}
+const DAYS = buildDaysDescendingFromToday();
+
+/* ---------- format helpers ---------- */
+function dateYMD(d){ return new Date(d).toISOString().slice(0,10); }
+function fmtPrice(n){
+  return Number(n).toLocaleString(undefined,{minimumFractionDigits:3, maximumFractionDigits:6});
+}
+function fmt2(n){ return Number(n).toLocaleString(undefined,{minimumFractionDigits:2, maximumFractionDigits:2}); }
+
+/* ---------- cache ---------- */
+const klinesCache = new Map();
+async function loadDailyKlines(symbol, day){
+  const {startUTC, endUTC} = colomboMidnightBounds(day);
+  const key = `${symbol}:${startUTC.toISOString().slice(0,10)}`;
+  if (klinesCache.has(key)) return klinesCache.get(key);
+
+  const params = new URLSearchParams({
+    symbol, interval:'1d',
+    startTime: startUTC.getTime(),
+    endTime: endUTC.getTime()
+  });
+  try{
+    const res = await fetch(`${API.futuresKlines}?${params.toString()}`, {cache:'no-store'});
+    if(!res.ok){ klinesCache.set(key,null); return null; }
+    const data = await res.json();
+    const row = Array.isArray(data) && data.length ? data[0] : null;
+    if(!row){ klinesCache.set(key,null); return null; }
+    const out = { openTime: row[0], open: parseFloat(row[1]), close: parseFloat(row[4]) };
+    klinesCache.set(key,out);
+    return out;
+  }catch(_){ klinesCache.set(key,null); return null; }
+}
+async function loadCurrentPrice(symbol){
+  try{
+    const res = await fetch(`${API.tickerPrice}?symbol=${symbol}`, {cache:'no-store'});
+    const j = await res.json();
+    return parseFloat(j.price);
+  }catch(_){ return null; }
+}
+
+/* backgrounds */
+const NX_BACKGROUNDS = ['https://iili.io/Kgp9GJj.gif','https://iili.io/Kr9UiVR.gif'];
+NX_BACKGROUNDS.forEach(src=>{ const img=new Image(); img.src=src; });
+
+/* ---------- QR + REFERRAL POOL (NO DUPLICATES) ---------- */
+const CUSTOM_QR_POOL = [
+  { url:"https://iili.io/K6p8Q5J.jpg", code:"266486323" },
+  { url:"https://iili.io/K6pvpcu.jpg", code:"361342455" },
+  { url:"https://iili.io/K6pvYyx.jpg", code:"542025165" },
+  { url:"https://iili.io/K6pkLEF.jpg", code:"481962935" },
+  { url:"https://iili.io/K6pkCs1.jpg", code:"1024836096" },
+  { url:"https://iili.io/K6pewla.jpg", code:"475308515" }
+];
+
+/* ======== NEW: Language packs & selector (≈ 1 in 10 cards VN/TH) ======== */
+function langPackRandom(){
+  // ~10% chance to switch from English. If switched, 50/50 VN or TH.
+  const useAlt = Math.random() < 0.10;
+  if(!useAlt){
+    return { code:'EN', LONG:'Long', SHORT:'Short', ENTRY:'Entry Price', LAST:'Last Price' };
+  }
+  const isVN = Math.random() < 0.5;
+  if(isVN){
+    return { code:'VI', LONG:'Mua', SHORT:'Bán', ENTRY:'Giá vào lệnh', LAST:'Giá hiện tại' };
+  }else{
+    return { code:'TH', LONG:'ซื้อ', SHORT:'ชอร์ต', ENTRY:'ราคาเข้า', LAST:'ราคาล่าสุด' };
+  }
+}
+
+/* ---------- CARD TEMPLATES ---------- */
+function makeProfitCardOld({side, leverage, symbol, entry, last, roiPct, pnlUSDT, ref, qrUrl, lp}){
+  const wrap = document.createElement('div');
+  wrap.className = 'pcard';
+  wrap.innerHTML = `
+    <div class="inner">
+      <div class="header">
+        <img class="binance-logo" src="https://iili.io/KKRCyss.th.png" alt="Binance Logo" />
+        <div class="text-block">
+          <div class="binance-text">BINANCE</div>
+          <div class="futures-text">FUTURES</div>
         </div>
       </div>
-    </section>
-
-    <!-- ===== Bottom nav ===== -->
-    <nav class="bottom-nav" aria-label="Bottom navigation" id="bottomNav">
-      <button>
-        <label class="photo-slot photo-slot--bottom photo-empty" data-slot="nav-home">
-          <input type="file" accept=".jpg,.jpeg,image/jpeg" capture="environment"><img alt="">
-        </label>
-        <span>Home</span>
-      </button>
-      <button>
-        <label class="photo-slot photo-slot--bottom photo-empty" data-slot="nav-markets">
-          <input type="file" accept=".jpg,.jpeg,image/jpeg" capture="environment"><img alt="">
-        </label>
-        <span>Markets</span>
-      </button>
-      <button>
-        <label class="photo-slot photo-slot--bottom photo-empty" data-slot="nav-trade">
-          <input type="file" accept=".jpg,.jpeg,image/jpeg" capture="environment"><img alt="">
-        </label>
-        <span>Trade</span>
-      </button>
-      <button>
-        <label class="photo-slot photo-slot--bottom photo-empty" data-slot="nav-futures">
-          <input type="file" accept=".jpg,.jpeg,image/jpeg" capture="environment"><img alt="">
-        </label>
-        <span>Futures</span>
-      </button>
-      <button class="active">
-        <label class="photo-slot photo-slot--bottom photo-empty" data-slot="nav-assets">
-          <input type="file" accept=".jpg,.jpeg,image/jpeg" capture="environment"><img alt="">
-        </label>
-        <span>Assets</span>
-      </button>
-    </nav>
-  </div>
-
-  <!-- ===== SHARE OVERLAY ===== -->
-  <div class="overlay" id="shareOverlay" aria-hidden="true">
-
-    <!-- Profit card (floating) -->
-    <div class="overlay-card-wrap" id="overlayCardWrap" style="bottom:0;">
-      <div class="pcard" id="pcard">
-        <div class="inner">
-          <div class="header">
-            <img class="binance-logo" src="https://iili.io/KKRCyss.th.png" alt="Binance Logo" />
-            <div class="text-block">
-              <div class="binance-text">BINANCE</div>
-              <div class="futures-text">FUTURES</div>
-            </div>
-          </div>
-
-          <div class="trade-info">
-            <span id="pcardSide" class="long">Long</span>
-            <span>|</span>
-            <span id="pcardLev">20x</span>
-            <span>|</span>
-            <span id="pcardSym">BTCUSDT Perpetual</span>
-          </div>
-
-          <div id="pcardPct" class="percentage green">+0.35%</div>
-
-          <div class="price-section">
-            <div class="price-line">
-              <span class="price-label">Entry Price</span>
-              <span id="pcardEntry" class="price-value">0.00</span>
-            </div>
-            <div class="price-line">
-              <span class="price-label">Last Price</span>
-              <span id="pcardLast" class="price-value">0.00</span>
-            </div>
-          </div>
-
-          <div class="referral-section">
-            <img id="pcardQR" class="qr" src="https://api.qrserver.com/v1/create-qr-code/?size=80x80&data=456516353" alt="QR Code"/>
-            <div>
-              <div class="ref-text">Referral Code</div>
-              <div id="pcardRef" class="referral-code">456516353</div>
-              <div class="app-text">Get the Binance App</div>
-            </div>
-          </div>
+      <div class="trade-info">
+        <span class="${side==='LONG'?'long':'short'}">${side==='LONG'?lp.LONG:lp.SHORT}</span>
+        <span>|</span><span>${leverage}x</span>
+        <span>|</span><span>${symbol} Perpetual</span>
+      </div>
+      <div class="percentage ${roiPct>=0?'green':'red'}">${roiPct>=0?'+':''}${roiPct.toFixed(2)}%</div>
+      <div class="price-section">
+        <div class="price-line"><span class="price-label">${lp.ENTRY}</span><span class="price-value">${fmtPrice(entry)}</span></div>
+        <div class="price-line"><span class="price-label">${lp.LAST}</span><span class="price-value">${fmtPrice(last)}</span></div>
+      </div>
+      <div class="referral-section">
+        <img class="qr" src="${qrUrl || 'https://iili.io/K1dUMml.jpg'}" alt="QR Code"/>
+        <div>
+          <div class="ref-text">Referral Code</div>
+          <div class="referral-code">${ref}</div>
+          <div class="app-text">Get the Binance App</div>
         </div>
-      </div><!-- /.pcard -->
+      </div>
+    </div>`;
+  return wrap;
+}
+
+function makeProfitCardNew({side, leverage, symbol, entry, last, roiPct, pnlUSDT, member, ymd, randomTime, ref, qrUrl, lp}){
+  const wrap = document.createElement('div');
+  wrap.className = 'nx-card';
+  wrap.style.background = `#111 url("${pick(NX_BACKGROUNDS)}") center/cover no-repeat`;
+
+  const positive = roiPct >= 0;
+  const showROI = Math.random()<0.6 && Math.abs(roiPct)>=100;
+  const pnlLine = showROI
+    ? `<div class="nx-roi ${positive?'posG':'posR'}">${positive?'+':''}${roiPct.toFixed(2)}%</div><div class="nx-percent"></div>`
+    : `<div class="nx-usd ${positive?'posG':'posR'}">${positive?'+':''}${fmt2(pnlUSDT)}</div><div class="nx-u">USDT</div>`;
+
+  wrap.innerHTML = `
+    <div class="nx-header">
+      <div class="nx-av"><img src="https://iili.io/K10FPQ1.th.jpg" alt="${member.name}"></div>
+      <div class="nx-user">
+        <span class="nx-name">${member.name}</span>
+        <span class="nx-time">${ymd} ${randomTime}</span>
+      </div>
     </div>
-
-    <!-- Share sheet (anchored bottom) -->
-    <div class="share-menu" id="shareSheet">
-      <div class="icon-row">
-        <div class="share-item">
-          <div class="share-icon" style="background-color:#3b5998"><i class="fab fa-facebook-f"></i></div>
-          <span>Facebook</span>
-        </div>
-        <div class="share-item">
-          <div class="share-icon instagram-icon"><i class="fab fa-instagram"></i></div>
-          <span>Instagram</span>
-        </div>
-        <div class="share-item">
-          <div class="share-icon"><i class="far fa-smile"></i></div>
-          <span>Stickers</span>
-        </div>
-        <div class="share-item">
-          <div class="share-icon"><i class="fas fa-download"></i></div>
-          <span>Save</span>
-        </div>
-        <div class="share-item">
-          <div class="share-icon"><i class="fas fa-ellipsis-h"></i></div>
-          <span>More</span>
-        </div>
+    <div class="nx-body">
+      <div class="nx-title">${symbol} PERPETUAL</div>
+      <div class="nx-pos">
+        <span class="${side==='LONG'?'nx-long':'nx-short'}">${side==='LONG'?lp.LONG:lp.SHORT}</span>
+        <span class="nx-div"></span>
+        <span class="nx-lev">${leverage}x</span>
       </div>
-      <div class="cancel-btn" id="shareCancel">Cancel</div>
+      <div class="nx-pnl">${pnlLine}</div>
+      <div class="nx-prices">
+        <div class="nx-entry"><div class="nx-label">${lp.ENTRY}</div><div class="nx-value">${fmtPrice(entry)}</div></div>
+        <div class="nx-last"><div class="nx-label">${lp.LAST}</div><div class="nx-value">${fmtPrice(last)}</div></div>
+      </div>
     </div>
-  </div>
-
-  <script>
-    /* ===== Segmented control ===== */
-    (function(){
-      const wrap = document.querySelector('.app .top-toggle');
-      const btns  = [...wrap.querySelectorAll('.toggle-btn')];
-      const thumb = wrap.querySelector('.seg-thumb');
-      const setActive = (i) => { btns.forEach((b,idx)=> b.classList.toggle('active', idx===i)); thumb.style.transform = `translateX(${i*100}%)`; };
-      setActive(0); btns.forEach((b,i)=> btns[i].addEventListener('click',()=>setActive(i)));
-    })();
-
-    /* ===== Layout sizing ===== */
-    function sizeFeed(){
-      const feed = document.getElementById('feed');
-      const stickyBar = document.getElementById('stickyBar');
-      const bottomNav = document.getElementById('bottomNav');
-      const topStack  = document.getElementById('topStack');
-      if(!feed || !stickyBar || !bottomNav || !topStack) return;
-      const topOffset = Math.ceil(topStack.getBoundingClientRect().height + 8);
-      stickyBar.style.top = topOffset + 'px';
-      const barH = stickyBar.getBoundingClientRect().height || 40;
-      const bottomH = bottomNav.getBoundingClientRect().height || 56;
-      const available = window.innerHeight - (topOffset + barH) - bottomH - 12;
-      feed.style.height = Math.max(120, available) + 'px';
-      feed.style.maxHeight = feed.style.height;
-    }
-    window.addEventListener('resize', sizeFeed);
-    document.addEventListener('DOMContentLoaded', sizeFeed);
-
-    /* ===== Top panel utils ===== */
-    const fmtMoney = (n) =>
-      "$" + Number(n).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-    const fmtPct = (n) => (n >= 0 ? "+" : "") + n.toFixed(2) + "%";
-
-    const amountEl = document.getElementById("amount");
-    const walletEl = document.getElementById("walletValue");
-    const unrealEl = document.getElementById("unrealizedValue");
-    const realizedSpan = document.getElementById("realizedSpan");
-    const eye = document.getElementById("eyeToggle");
-
-    /* ===== Account display ranges ===== */
-    const BAL_MIN = 350000, BAL_MAX = 500000;
-
-    /* >>> Today’s realized PNL absolute random range as requested <<< */
-    const REALIZED_MIN_USD = 2500;
-    const REALIZED_MAX_USD = 8000;
-
-    let showTop = true;
-    let marginBalanceTarget = 0;
-    let realizedTodayUSD = 0;
-    let realizedTodayPct = 0;
-    let walletBalance = 0;
-    let unrealizedSum = 0;
-
-    function refreshTop(){
-      amountEl.textContent   = showTop ? fmtMoney(walletBalance + unrealizedSum) : "•••••••";
-      walletEl.textContent   = showTop ? fmtMoney(walletBalance) : "•••••••";
-      unrealEl.textContent   = showTop ? fmtMoney(unrealizedSum) : "•••••••";
-      realizedSpan.textContent = showTop ? `${fmtMoney(realizedTodayUSD)} (${fmtPct(realizedTodayPct)})` : "•••••••";
-    }
-    eye.addEventListener("click", ()=>{ showTop = !showTop; eye.classList.toggle("fa-eye-slash", !showTop); eye.classList.toggle("fa-eye", showTop); refreshTop(); });
-
-    /* ===== Helper fns ===== */
-    const numberWithCommas = (x) => String(x).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-    const toFixedSafe = (n, dp) => { const num = Number(n); if (!Number.isFinite(num)) return (0).toFixed(dp); const m = Math.pow(10, dp); return (Math.round(num * m) / m).toFixed(dp); };
-    const dpFromTick = (tickStr) => { const idx = (tickStr || '').indexOf('.'); if (idx === -1) return 0; return tickStr.length - idx - 1; };
-    const quantizeToTick = (price, tickSize) => { const step = parseFloat(tickSize); if (!isFinite(price) || !isFinite(step) || step <= 0) return price; return Math.round(price / step) * step; };
-    const quantizeDownToStep = (qty, stepSize) => { const step = parseFloat(stepSize); if (!isFinite(qty) || !isFinite(step) || step <= 0) return qty; return Math.floor(qty / step) * step; };
-    function joinIntDec(i, d) { const I = numberWithCommas(i); return d !== undefined ? I + '.' + d : I; }
-    function shuffle(arr){ for (let i = arr.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [arr[i], arr[j]] = [arr[j]]; } return arr; }
-
-    /* ====== photo-slot logic (defaults + persistence) ====== */
-    const SLOT_KEY_PREFIX = 'photo_slot_';
-    const DEFAULT_URLS = {
-      'top-reward':   'https://iili.io/K2Mnzqx.jpg',
-      'top-convert':  'https://iili.io/K2MzAdl.jpg',
-      'top-statement':'https://iili.io/K2Mxfou.jpg',
-      'nav-home':    'https://iili.io/K2MQNN1.jpg',
-      'nav-markets': 'https://iili.io/K2VvLLN.th.jpg',
-      'nav-trade':   'https://iili.io/K2V1Opn.th.jpg',
-      'nav-futures': 'https://iili.io/K2VMPYN.th.jpg',
-      'nav-assets':  'https://iili.io/K2VVVwX.th.jpg'
-    };
-    function loadSlot(id){ try { return localStorage.getItem(SLOT_KEY_PREFIX + id) || ''; } catch { return ''; } }
-    function saveSlot(id, dataURL){ try { localStorage.setItem(SLOT_KEY_PREFIX + id, dataURL); } catch {} }
-    function initPhotoSlots(){
-      document.querySelectorAll('.photo-slot').forEach(slot=>{
-        const key = slot.dataset.slot;
-        const img = slot.querySelector('img');
-        const input = slot.querySelector('input[type="file"]');
-        const saved = loadSlot(key);
-        if (saved) {
-          img.src = saved;
-          slot.classList.remove('photo-empty');
-        } else if (DEFAULT_URLS[key]) {
-          img.src = DEFAULT_URLS[key];
-          slot.classList.remove('photo-empty');
-        }
-        input.addEventListener('change', (e)=>{
-          const file = e.target.files && e.target.files[0];
-          if(!file) return;
-          const ok = /jpe?g$/i.test(file.name) || file.type === 'image/jpeg';
-          if(!ok){ alert('Please upload a JPG (.jpg or .jpeg)'); e.target.value=''; return; }
-          const reader = new FileReader();
-          reader.onload = () => {
-            img.src = reader.result;
-            slot.classList.remove('photo-empty');
-            saveSlot(key, reader.result);
-          };
-          reader.readAsDataURL(file);
-        });
-      });
-    }
-
-    /* ===== Exchange / calculations (Binance-style) ===== */
-    const MARGIN_STORE_KEY = 'futures_mock_saved_margins_v1';
-    const round2 = (x) => Math.round((Number(x)||0) * 100) / 100;
-    function loadSavedMargins(){ try { return JSON.parse(localStorage.getItem(MARGIN_STORE_KEY)) || {}; } catch { return {}; } }
-    function saveMarginForSymbol(sym, used, eff, lev){ const store = loadSavedMargins(); store[sym] = { used: round2(used), eff: round2(eff), lev: Math.max(1, parseInt(lev||10,10)) }; localStorage.setItem(MARGIN_STORE_KEY, JSON.stringify(store)); }
-    function getSavedForSymbol(sym){ const store = loadSavedMargins(); return store[sym]; }
-    window.resetSavedMargins = function(){ localStorage.removeItem(MARGIN_STORE_KEY); location.reload(); };
-
-    const marketMeta = Object.create(null);
-    async function loadExchangeMeta() {
-      const url = 'https://fapi.binance.com/fapi/v1/exchangeInfo';
-      try{
-        const res = await fetch(url);
-        const json = await res.json();
-        if (!json || !Array.isArray(json.symbols)) return;
-        for (const s of json.symbols) {
-          const sym = s.symbol;
-          if (!allSymbols.includes(sym)) continue;
-          let tickSize = '0.01', stepSize = '0.001', minQty = 0;
-          if (Array.isArray(s.filters)) {
-            for (const f of s.filters) {
-              if (f.filterType === 'PRICE_FILTER' && f.tickSize) tickSize = f.tickSize;
-              if ((f.filterType === 'LOT_SIZE' || f.filterType === 'MARKET_LOT_SIZE') && f.stepSize) stepSize = f.stepSize;
-              if ((f.filterType === 'LOT_SIZE' || f.filterType === 'MARKET_LOT_SIZE') && f.minQty) minQty = parseFloat(f.minQty) || 0;
-            }
-          }
-          marketMeta[sym] = { tickSize, stepSize, minQty, priceDp: dpFromTick(tickSize) };
-        }
-      }catch(e){ }
-    }
-    const getMeta = (sym) => marketMeta[sym] || { tickSize: '0.01', stepSize: '0.001', minQty: 0, priceDp: 2 };
-    function formatPrice(sym, x) { const m = getMeta(sym); const q = quantizeToTick(x, m.tickSize); const s = toFixedSafe(q, m.priceDp); const [i, d] = s.split('.'); return joinIntDec(i, d); }
-    function formatProfit(_sym, x) { const s = toFixedSafe(x, 2); const [i, d] = s.split('.'); return joinIntDec(i, d); }
-    function formatTwoDP(x) { const s = toFixedSafe(x, 2); const [i, d] = s.split('.'); return joinIntDec(i, d); }
-
-    const primeSymbols = ['BTCUSDT','ETHUSDT','BNBUSDT','SOLUSDT','XRPUSDT','DOGEUSDT','TONUSDT','ADAUSDT','AVAXUSDT','TRXUSDT','LINKUSDT','DOTUSDT','NEARUSDT','OPUSDT','ARBUSDT','APTUSDT','INJUSDT','RNDRUSDT','SEIUSDT','TIAUSDT','ONDOUSDT'];
-    const seedSymbols = ['BTCUSDT','ETHUSDT','BNBUSDT','ADAUSDT','SOLUSDT','XRPUSDT','DOTUSDT','LTCUSDT','LINKUSDT','DOGEUSDT','AAVEUSDT','SUSHIUSDT','SHIBUSDT','COMPUSDT','ETCUSDT','ZECUSDT','XMRUSDT','LRCUSDT','QNTUSDT','CRVUSDT','UNIUSDT','BCHUSDT','XLMUSDT','ATOMUSDT','MATICUSDT','AVAXUSDT','TRXUSDT','EOSUSDT','NEARUSDT','FILUSDT','OPUSDT','ARBUSDT','APTUSDT','SUIUSDT','INJUSDT','RNDRUSDT','GALAUSDT','THETAUSDT','SANDUSDT','MANAUSDT','AXSUSDT','CFXUSDT','ICPUSDT','LDOUSDT','PEPEUSDT','FLOKIUSDT','WIFUSDT','ARKUSDT','IOTAUSDT','KASUSDT','PYTHUSDT','STRKUSDT','JUPUSDT','APEUSDT','BLURUSDT','SEIUSDT','TIAUSDT','TONUSDT','ONDOUSDT'];
-    const allSymbols = Array.from(new Set([...primeSymbols, ...seedSymbols]));
-
-    /* Approx symbol-wise maintenance margin rate (cross, simplified) */
-    const maintenanceMarginRates = { BTCUSDT:0.004, ETHUSDT:0.005, BNBUSDT:0.005, ADAUSDT:0.010, SOLUSDT:0.008, XRPUSDT:0.010, DOTUSDT:0.010, LTCUSDT:0.010, LINKUSDT:0.010, DOGEUSDT:0.012, AAVEUSDT:0.010, SUSHIUSDT:0.015, SHIBUSDT:0.020, COMPUSDT:0.010, ETCUSDT:0.010, ZECUSDT:0.015, XMRUSDT:0.020, LRCUSDT:0.020, QNTUSDT:0.015, CRVUSDT:0.020, UNIUSDT:0.010, BCHUSDT:0.010, XLMUSDT:0.015, ATOMUSDT:0.010, MATICUSDT:0.010, AVAXUSDT:0.010, TRXUSDT:0.020, EOSUSDT:0.015, NEARUSDT:0.020, FILUSDT:0.015, OPUSDT:0.015, ARBUSDT:0.020, APTUSDT:0.015, SUIUSDT:0.020, INJUSDT:0.015, RNDRUSDT:0.015, ICPUSDT:0.015, LDOUSDT:0.020, PEPEUSDT:0.030, FLOKIUSDT:0.030, WIFUSDT:0.030, IOTAUSDT:0.020, KASUSDT:0.025, PYTHUSDT:0.020, STRKUSDT:0.020, JUPUSDT:0.020, APEUSDT:0.020, BLURUSDT:0.020, SEIUSDT:0.020, TIAUSDT:0.020, TONUSDT:0.015, ONDOUSDT:0.020 };
-    const getMaintRate = (sym) => maintenanceMarginRates[sym] ?? 0.01;
-
-    /* Futures linear PnL/ROI (USDT-M) */
-    const qtyFrom = (marginUsed, leverage, entry) => (leverage * marginUsed) / entry;
-    const upnlLong  = (mark, entry, qty) => (mark - entry) * qty;
-    const upnlShort = (mark, entry, qty) => (entry - mark) * qty;
-    const roiPct = (pnl, usedMargin) => (pnl / usedMargin) * 100;
-    const maintenance = (mmr, mark, qty) => mmr * mark * qty;
-    const marginBalanceCalc = (effectiveMargin, uPnL) => effectiveMargin + uPnL;
-
-    /* Cross-mode liquidation price (simplified approximation) */
-    function liqPriceLong(entry, leverage, mmr, marginUsed, effectiveMargin) {
-      const Q = (leverage * marginUsed) / entry;
-      const denom = Q * (1 - mmr);
-      const num = Q * entry - effectiveMargin;
-      if (denom <= 0) return null; const P = num / denom;
-      if (!isFinite(P) || P <= 0) return null; return P;
-    }
-    function liqPriceShort(entry, leverage, mmr, marginUsed, effectiveMargin) {
-      const Q = (leverage * marginUsed) / entry;
-      const denom = Q * (1 + mmr);
-      const num = effectiveMargin + Q * entry;
-      if (denom <= 0) return null; const P = num / denom;
-      if (!isFinite(P) || P <= 0) return null; return P;
-    }
-    const marginRatioPct = (maint, mBal) => { const mb = Number(mBal); if (!isFinite(mb) || mb <= 0) return 100; const r = (maint / mb) * 100; return Math.max(0, Math.min(9999, r)); };
-
-    const feedDiv = document.getElementById('feed');
-    function meterBars(){ const totalBars = 4; const greenBars = Math.floor(Math.random() * totalBars) + 1; let html=''; for(let j=0;j<totalBars;j++) html += `<span class="${j<greenBars?'green':''}"></span>`; return html; }
-
-    function createPanel({ sym, leverage, entry, mark, usedMargin, effMargin, mmr, qty, side }) {
-      const pnl = side === 'LONG' ? upnlLong(mark, entry, qty) : upnlShort(mark, entry, qty);
-      const roi = roiPct(pnl, usedMargin);
-      const maint = maintenance(mmr, mark, qty);
-      const mBal = marginBalanceCalc(effMargin, pnl);
-      const mRatio = marginRatioPct(maint, mBal);
-      const liq = side === 'LONG' ? liqPriceLong(entry, leverage, mmr, usedMargin, effMargin) : liqPriceShort(entry, leverage, mmr, usedMargin, effMargin);
-      const sideIcon = side === 'LONG' ? '<span class="icon-buy">B</span>' : '<span class="icon-sell">S</span>';
-      const sizeUSDT = mark * qty;
-      const panel = document.createElement('div');
-      panel.className = 'trade-panel';
-      panel.innerHTML = `
-        <div class="header">
-          ${sideIcon}
-          <span class="symbol">${sym}</span>
-          <span class="tag">PERP</span>
-          <span class="tag">Cross ${leverage}×</span>
-          <span class="exclamations">${meterBars()}</span>
-          <i class="fas fa-share-nodes share" title="Share"></i>
+    <div class="nx-foot">
+      <span class="nx-line"></span>
+      <div class="nx-footc">
+        <div class="nx-id">
+          <img class="nx-footer-img" src="https://iili.io/KrutTVp.png" alt="Footer image">
+          <span class="nx-ref">Referral Code ${ref}</span>
         </div>
-        <div class="content-columns">
-          <div class="column">
-            <div class="stat">
-              <div class="label">PNL (USDT)</div>
-              <div class="value pnl ${pnl < 0 ? 'red' : 'green'}">${formatProfit(sym, pnl)}</div>
-            </div>
-            <div class="stat">
-              <div class="label">Size (USDT)</div>
-              <div class="value size">${formatTwoDP(sizeUSDT)}</div>
-            </div>
-            <div class="stat">
-              <div class="label">Entry Price (USDT)</div>
-              <div class="value entry">${formatPrice(sym, entry)}</div>
-            </div>
-          </div>
-          <div class="column center">
-            <div class="stat">
-              <div class="label no-line">Margin (USDT)</div>
-              <div class="value margin">${formatTwoDP(usedMargin)}</div>
-            </div>
-            <div class="stat">
-              <div class="label no-line">Mark Price (USDT)</div>
-              <div class="value mark">${formatPrice(sym, mark)}</div>
-            </div>
-          </div>
-          <div class="column right">
-            <div class="stat">
-              <div class="label">ROI</div>
-              <div class="value percent roi ${roi < 0 ? 'red' : 'green'}">${(roi >= 0 ? '+' : '') + toFixedSafe(roi, 2)}%</div>
-            </div>
-            <div class="stat margin-ratio">
-              <div class="label">Margin Ratio</div>
-              <div class="value percent margin-ratio-value ${mRatio >= 80 ? 'red' : 'green'}">${toFixedSafe(mRatio, 2)}%</div>
-            </div>
-            <div class="stat">
-              <div class="label no-line">Liq. Price (USDT)</div>
-              <div class="value liq">${liq === null ? '—' : formatPrice(sym, liq)}</div>
-            </div>
-          </div>
-        </div>
-        <div class="tp-actions">
-          <button class="tp-btn">Leverage</button>
-          <button class="tp-btn">TP/SL</button>
-          <button class="tp-btn">Close</button>
-          <button class="tp-btn">Reverse</button>
-        </div>`;
-      const node = panel;
+        <span class="nx-qr"><img src="${qrUrl || 'https://iili.io/KrdUz7I.jpg'}" alt="QR"></span>
+      </div>
+    </div>`;
+  return wrap;
+}
 
-      // SHARE → open overlay (profit card + sheet)
-      node.querySelector('.share').addEventListener('click', () => openProfitCardOverlay({
-        sym, leverage, entry, mark, usedMargin, effMargin, mmr, qty, side
-      }));
+function makeAdminBubbleNode(innerNode, metaText){
+  const b = document.createElement('div'); b.className = 'bub admin';
+  b.appendChild(innerNode);
+  if (metaText){ const m = document.createElement('div'); m.className='meta'; m.textContent = metaText; b.appendChild(m); }
+  return b;
+}
 
-      return { node, sym, leverage, mmr, entry, usedMargin, effMargin, qty, mark, side, lockLoss:false };
+/* batching / infinite scroll */
+let nextIndexTop = 0;
+const INITIAL_DAYS = 12;
+const BATCH_DAYS   = 6;
+let preloading = false;
+function showTopLoader(on){
+  TOP_LOADER.hidden = !on;
+  TOP_LOADER.setAttribute('aria-busy', on ? 'true' : 'false');
+}
+
+/* helpers */
+function clamp(v,min,max){ return Math.max(min, Math.min(max, v)); }
+
+/* >>> randomized leverage pool kept as-is */
+function chooseLeverageForROI(){
+  const pool = [10, 20, 50, 100, 125];
+  return pool[Math.floor(Math.random()*pool.length)];
+}
+
+function chooseNotionalForPNL(roiPct){
+  const roiFactor = Math.abs(roiPct)/100 || 0.001;
+  const minPNL=300, maxPNL=10000;
+  const minNotional = minPNL / roiFactor;
+  const maxNotional = maxPNL / roiFactor;
+  const n = minNotional + Math.random()*(maxNotional - minNotional);
+  return clamp(n, 50, 200000);
+}
+
+/* ---------- Build one day (real prices for that calendar day, Colombo) ---------- */
+async function buildDayFragment(day, opts={}){
+  const frag = document.createDocumentFragment();
+  const cardsToday = opts.count ?? (10 + Math.floor(Math.random() * 6)); // [10..15]
+  const needSymbols = new Set();
+  while (needSymbols.size < Math.min(cardsToday, SYMBOLS.length)){
+    needSymbols.add(pick(SYMBOLS));
+  }
+
+  // Preload daily klines for chosen symbols
+  await Promise.all(Array.from(needSymbols).map(sym => loadDailyKlines(sym, day)));
+
+  const isToday = ymdColombo(day) === todayColomboYMD();
+
+  for (let c=0; c<cardsToday; c++){
+    const symbol = pick(SYMBOLS);
+    const k = await loadDailyKlines(symbol, day);
+    if(!k) continue;
+
+    const entry = k.open;
+    let last  = k.close;
+
+    // If it's TODAY in Colombo, use LIVE last price
+    if (isToday){
+      const live = await loadCurrentPrice(symbol);
+      if (live && isFinite(live)) last = live;
     }
 
-    function renderTrade(t) {
-      const pnl = (t.side === 'LONG') ? upnlLong(t.mark, t.entry, t.qty) : upnlShort(t.mark, t.entry, t.qty);
-      const roi = roiPct(pnl, t.usedMargin);
-      const maintV = maintenance(t.mmr, t.mark, t.qty);
-      const mBal = marginBalanceCalc(t.effMargin, pnl);
-      const mRatio = marginRatioPct(maintV, mBal);
-      const liq = (t.side === 'LONG') ? liqPriceLong(t.entry, t.leverage, t.mmr, t.usedMargin, t.effMargin) : liqPriceShort(t.entry, t.leverage, t.mmr, t.usedMargin, t.effMargin);
+    const longPct  = ((last - entry) / entry) * 100;
+    const shortPct = ((entry - last) / entry) * 100;
+    const side = longPct >= shortPct ? 'LONG' : 'SHORT';
+    const pctBase = side==='LONG' ? longPct : shortPct;
 
-      const pnlEl = t.node.querySelector('.value.pnl'); pnlEl.textContent = formatProfit(t.sym, pnl); pnlEl.classList.toggle('green', pnl >= 0); pnlEl.classList.toggle('red', pnl < 0);
-      t.node.querySelector('.value.mark').textContent = formatPrice(t.sym, t.mark);
-      const sizeEl = t.node.querySelector('.value.size'); sizeEl.textContent = formatTwoDP(t.mark * t.qty);
-      const roiEl = t.node.querySelector('.value.roi'); roiEl.textContent = (roi >= 0 ? '+' : '') + toFixedSafe(roi, 2) + '%'; roiEl.classList.toggle('green', roi >= 0); roiEl.classList.toggle('red', roi < 0);
-      const mrEl = t.node.querySelector('.value.margin-ratio-value'); mrEl.textContent = toFixedSafe(mRatio, 2) + '%'; mrEl.classList.toggle('green', mRatio < 80); mrEl.classList.toggle('red', mRatio >= 80);
-      const liqEl = t.node.querySelector('.value.liq'); liqEl.textContent = (liq === null) ? '—' : formatPrice(t.sym, liq);
+    const lev = Math.round(chooseLeverageForROI());
+    const roiPct = pctBase * lev;
+
+    const notional = chooseNotionalForPNL(roiPct);
+    const pnlUSDT = notional * (roiPct/100);
+
+    const member = members[(Math.random()*members.length)|0];
+    const ymd = ymdColombo(day);
+    const hh = String(Math.floor(Math.random()*24)).padStart(2,'0');
+    const mm = String(Math.floor(Math.random()*60)).padStart(2,'0');
+    const ss = String(Math.floor(Math.random()*60)).padStart(2,'0');
+    const timeText = `${hh}:${mm}:${ss}`;
+
+    const tempRef = String(Math.floor(100000000 + Math.random()*900000000));
+
+    /* NEW: per-card language pack (≈1/10 in VI or TH) */
+    const lp = langPackRandom();
+
+    const useNew = true;
+    const node = useNew
+      ? makeProfitCardNew({side, leverage:lev, symbol, entry, last, roiPct, pnlUSDT, member, ymd, randomTime:timeText, ref:tempRef, qrUrl:null, lp})
+      : makeProfitCardOld({side, leverage:lev, symbol, entry, last, roiPct, pnlUSDT, ref:tempRef, qrUrl:null, lp});
+
+    frag.appendChild(makeAdminBubbleNode(node, member.name));
+  }
+  return frag;
+}
+
+/* ================== QR ASSIGNMENT ON TAIL 20 ================== */
+function assignQRCodesToTail(){
+  try{
+    const cards = Array.from(CHAT.querySelectorAll('.nx-card, .pcard'));
+    if (cards.length === 0) return;
+
+    const tail = cards.slice(-20);
+
+    const idxs = new Set();
+    while (idxs.size < Math.min(6, tail.length)){
+      idxs.add(Math.floor(Math.random()*tail.length));
     }
 
-    function sixMonthsAgoMs(){ const d=new Date(); d.setMonth(d.getMonth()-6); d.setHours(0,0,0,0); return d.getTime(); }
-    async function fetchSixMonthMarkClose(sym, startMs){
-      try{ const url1=`https://fapi.binance.com/fapi/v1/markPriceKlines?symbol=${sym}&interval=1d&startTime=${startMs-2*24*3600*1000}&limit=2`;
-        const res1=await fetch(url1); if(res1.ok){ const data=await res1.json(); if(Array.isArray(data)&&data.length>0){ const k=data[0]; const close=parseFloat(k[4]); if(isFinite(close)) return close; } } }catch{}
-      try{ const url2=`https://fapi.binance.com/fapi/v1/continuousKlines?pair=${sym}&contractType=PERPETUAL&interval=1d&startTime=${startMs-2*24*3600*1000}&limit=2`;
-        const res2=await fetch(url2); if(res2.ok){ const data=await res2.json(); if(Array.isArray(data)&&data.length>0){ const k=data[0]; const close=parseFloat(k[4]); if(isFinite(close)) return close; } } }catch{}
-      try{ const url3=`https://fapi.binance.com/fapi/v1/klines?symbol=${sym}&interval=1d&startTime=${startMs-2*24*3600*1000}&limit=2`;
-        const res3=await fetch(url3); if(res3.ok){ const data=await res3.json(); if(Array.isArray(data)&&data.length>0){ const k=data[0]; const close=parseFloat(k[4]); if(isFinite(close)) return close; } } }catch{}
-      return null;
-    }
-    async function loadSixMonthEntryMap(symbolList){
-      const start=sixMonthsAgoMs(); const entryMap=Object.create(null); const unique=[...new Set(symbolList)]; const batch=8;
-      for(let i=0;i<unique.length;i+=batch){ const chunk=unique.slice(i,i+batch);
-        await Promise.all(chunk.map(async (sym)=>{ const close=await fetchSixMonthMarkClose(sym,start); if(isFinite(close)) entryMap[sym]=close; })); }
-      return entryMap;
-    }
+    const pool = CUSTOM_QR_POOL.slice();
+    shuffle(pool);
 
-    const trades=[]; let symbols=shuffle(allSymbols.slice()); const tradeCount=60;
-    function shuffleFeed(){ const nodes=Array.from(feedDiv.children); nodes.filter(n=>n.id!=='emptyState').forEach(n=>feedDiv.appendChild(n)); }
+    let i = 0;
+    for (const pos of idxs){
+      if (!pool[i]) break;
+      const card = tail[pos];
+      const { url, code } = pool[i];
 
-    async function seedWithFuturesMark6M(){
-      const empty=document.getElementById("emptyState"); if(empty) empty.remove();
-      await loadExchangeMeta(); symbols = symbols.filter(s=>!!marketMeta[s]);
-      const res=await fetch('https://fapi.binance.com/fapi/v1/premiumIndex'); const arr=await res.json();
-      const markMap=Object.create(null); arr.forEach(o=>{ if(o&&o.symbol) markMap[o.symbol]=parseFloat(o.markPrice); });
-      const poolForEntry=Array.from(new Set([...primeSymbols, ...symbols.slice(0, tradeCount*2)]));
-      const entryMap=await loadSixMonthEntryMap(poolForEntry);
-      const MARGIN_MIN=50, MARGIN_MAX=300;
-      const mainList=primeSymbols.filter(s=>marketMeta[s]&&isFinite(markMap[s])&&isFinite(entryMap[s]));
-      const otherList=symbols.filter(s=>!primeSymbols.includes(s)&&marketMeta[s]&&isFinite(markMap[s])&&isFinite(entryMap[s]));
-      const planned=[...mainList, ...otherList].slice(0, tradeCount);
-      for(let i=0;i<planned.length;i++){
-        const sym=planned[i]; const liveMark=markMap[sym]; if(!isFinite(liveMark)) continue;
-        const sixMEntryRaw=entryMap[sym]; if(!isFinite(sixMEntryRaw)) continue;
-        const saved=getSavedForSymbol(sym);
-        let leverage=saved?.lev ?? [10,20,50,100][Math.floor(Math.random()*4)];
-        const entry=quantizeToTick(sixMEntryRaw, getMeta(sym).tickSize);
-        const side=(liveMark >= entry) ? 'LONG' : 'SHORT';
-        let usedMargin=saved?.used ?? (MARGIN_MIN + Math.random()*(MARGIN_MAX - MARGIN_MIN));
-        const m=getMeta(sym);
-        let qtyRaw=qtyFrom(usedMargin, leverage, entry);
-        let qty=quantizeDownToStep(qtyRaw, m.stepSize);
-        if(qty < m.minQty) qty = m.minQty;
-        let effMargin = saved?.eff ?? (usedMargin * (1.5 + Math.random() * 2.5));
-        saveMarginForSymbol(sym, usedMargin, effMargin, leverage);
-        const panelState = createPanel({ sym, leverage, entry, mark: liveMark, usedMargin, effMargin, mmr: getMaintRate(sym), qty, side });
-        trades.push(panelState); feedDiv.appendChild(panelState.node);
+      if (card.classList.contains('nx-card')){
+        const qrImg = card.querySelector('.nx-qr img');
+        const refSpan = card.querySelector('.nx-ref');
+        if (qrImg) qrImg.src = url;
+        if (refSpan) refSpan.textContent = `Referral Code ${code}`;
+      } else {
+        const qrImg = card.querySelector('.qr');
+        const refDiv = card.querySelector('.referral-code');
+        if (qrImg) qrImg.src = url;
+        if (refDiv) refDiv.textContent = code;
       }
-      shuffleFeed(); sizeFeed();
+      i++;
     }
+  }catch(e){
+    console.warn('QR assign error', e);
+  }
+}
 
-    function recalcAccountTop(){
-      let sum=0;
-      for(const t of trades){
-        const pnl=(t.side==='LONG') ? upnlLong(t.mark, t.entry, t.qty) : upnlShort(t.mark, t.entry, t.qty);
-        sum += pnl;
+/* ================== STORAGE for daily auto-add ================== */
+const STORE_KEY = 'zygo_daily_cards';
+function readStore(){
+  try{ return JSON.parse(localStorage.getItem(STORE_KEY) || '{}'); }catch(_){ return {}; }
+}
+function writeStore(obj){
+  try{ localStorage.setItem(STORE_KEY, JSON.stringify(obj)); }catch(_){}
+}
+
+/* Ensure ~10 cards exist for a given Colombo date */
+async function ensureDailyCardsFor(colomboDateStr){
+  const store = readStore();
+  if (!store[colomboDateStr]){
+    const day = new Date(colomboDateStr+'T00:00:00');
+    const frag = await buildDayFragment(day, {count:10});
+    CHAT.appendChild(frag);
+    CHAT.scrollTop = CHAT.scrollHeight;
+    assignQRCodesToTail();
+    store[colomboDateStr] = {count:10, createdAt: Date.now()};
+    writeStore(store);
+  }
+}
+
+/* Backfill small recent gap */
+async function backfillMissingDays(){
+  const store = readStore();
+  const today = todayColomboYMD();
+
+  const savedDays = Object.keys(store).sort();
+  let startIdx = DAYS.findIndex(d => ymdColombo(d) === today);
+  if (startIdx < 0) startIdx = 0;
+
+  const need = [];
+  for (let i=0, added=0; i<30 && added<3 && (startIdx+i)<DAYS.length; i++){
+    const dStr = ymdColombo(DAYS[i]);
+    if (!store[dStr]){ need.push(dStr); added++; }
+  }
+  need.reverse();
+  for (const dStr of need){
+    await ensureDailyCardsFor(dStr);
+  }
+}
+
+/* Live refresh for today's last prices */
+async function refreshTodayLastPrices(){
+  const today = todayColomboYMD();
+  const nodes = Array.from(CHAT.querySelectorAll('.nx-card'));
+  if (!nodes.length) return;
+
+  const todayNodes = nodes.filter(n=>{
+    const t = n.querySelector('.nx-time')?.textContent || '';
+    return t.startsWith(today);
+  });
+
+  const mapSymToLast = {};
+  for (const n of todayNodes){
+    const title = n.querySelector('.nx-title')?.textContent || '';
+    const sym = (title.split(' ')[0] || '').trim();
+    if (sym && !mapSymToLast[sym]){
+      mapSymToLast[sym] = loadCurrentPrice(sym);
+    }
+  }
+  const entries = await Promise.all(Object.entries(mapSymToLast).map(async([s,p])=>[s, await p]));
+  const latest = Object.fromEntries(entries.filter(([,v])=>isFinite(v)));
+
+  todayNodes.forEach(n=>{
+    const title = n.querySelector('.nx-title')?.textContent || '';
+    const sym = (title.split(' ')[0] || '').trim();
+    const v = latest[sym];
+    if (isFinite(v)){
+      const lastVal = n.querySelector('.nx-last .nx-value');
+      if (lastVal) lastVal.textContent = fmtPrice(v);
+    }
+  });
+}
+
+/* ========================== INIT ========================== */
+(async function init(){
+  try{ await fetch(API.ping, {cache:'no-store'}); }catch(e){ /* ignore */ }
+
+  // Initial render for recent days
+  for (let i=0; i<INITIAL_DAYS && i<DAYS.length; i++){
+    const frag = await buildDayFragment(DAYS[i]);
+    CHAT.appendChild(frag);
+    nextIndexTop = i+1;
+  }
+  CHAT.scrollTop = CHAT.scrollHeight;
+
+  assignQRCodesToTail();
+
+  // Infinite scroll (older)
+  CHAT.addEventListener('scroll', async ()=>{
+    if (CHAT.scrollTop <= 100){
+      if (preloading) return;
+      preloading = true; showTopLoader(true);
+
+      const before = CHAT.scrollHeight;
+      const start = nextIndexTop;
+      const end = Math.min(nextIndexTop + BATCH_DAYS, DAYS.length);
+
+      for (let i=start; i<end; i++){
+        const dayFrag = await buildDayFragment(DAYS[i]);
+        const anchor = TOP_LOADER.nextSibling;
+        if (anchor){ CHAT.insertBefore(dayFrag, anchor); } else { CHAT.prepend(dayFrag); }
       }
-      unrealizedSum = sum; refreshTop();
+
+      nextIndexTop = end;
+
+      const after = CHAT.scrollHeight;
+      CHAT.scrollTop += (after - before);
+
+      const bub = CHAT.querySelectorAll('.bub');
+      const excess = Math.max(0, bub.length - DOM_CAP);
+      for(let i=0;i<excess;i++) bub[i].remove();
+
+      showTopLoader(false); preloading = false;
+
+      assignQRCodesToTail();
     }
+  });
 
-    /* Ensure both win & loss trades visible */
-    function forceTwoSmallLossesRandom(){
-      if (trades.length < 2) return;
-      const chosen=new Set();
-      while(chosen.size<2){ const r=Math.floor(Math.random() * trades.length); chosen.add(r); }
-      chosen.forEach((idx)=>{ const t=trades[idx]; const lossUSD=1 + Math.random()*5; const m=getMeta(t.sym);
-        let newMark=(t.side==='LONG') ? t.entry - (lossUSD / t.qty) : t.entry + (lossUSD / t.qty);
-        newMark=quantizeToTick(newMark, m.tickSize); t.mark=newMark; t.lockLoss=true; renderTrade(t); });
-      recalcAccountTop();
-    }
+  // Daily auto-add (~10 cards)
+  const today = todayColomboYMD();
+  await backfillMissingDays();
+  await ensureDailyCardsFor(today);
 
-    /* Live mark prices (Binance stream) */
-    function connectFuturesMarkWS(){
-      const WS_URL='wss://fstream.binance.com/ws/!markPrice@arr';
-      let ws=new WebSocket(WS_URL);
-      ws.onopen=()=>console.log('[WS] Connected');
-      ws.onmessage=(evt)=>{
-        let data; try{ data=JSON.parse(evt.data);}catch{return;}
-        if(!Array.isArray(data)) return;
-        let touched=false;
-        for(const o of data){
-          const sym=o.s; const priceStr=o.p; if(!sym || priceStr===undefined) continue;
-          const mp=parseFloat(priceStr); if(!isFinite(mp)) continue;
-          for(const t of trades){ if(t.sym===sym){ if(t.lockLoss) continue; t.mark=mp; renderTrade(t); touched=true; } }
-        }
-        if(touched) recalcAccountTop();
-      };
-      ws.onclose=()=>{ console.warn('[WS] Closed. Reconnecting in 2s…'); setTimeout(connectFuturesMarkWS, 2000); };
-      ws.onerror=(err)=>{ console.error('[WS] Error', err); try{ ws.close(); }catch{} };
-    }
+  // Nightly rollover
+  (function scheduleMidnightRollover(){
+    const now = new Date();
+    const {startUTC} = colomboMidnightBounds(new Date(now.getTime()+86400000));
+    const msToNext = startUTC.getTime() - now.getTime();
+    setTimeout(async ()=>{
+      const newDay = todayColomboYMD();
+      await ensureDailyCardsFor(newDay);
+      scheduleMidnightRollover();
+    }, Math.max(1000, msToNext));
+  })();
 
-    /* ===== SHARE OVERLAY LOGIC (card + sheet) ===== */
-    const REF_CODE = '456516353';
-    const overlay = document.getElementById('shareOverlay');
-    const shareCancel = document.getElementById('shareCancel');
-    const overlayCardWrap = document.getElementById('overlayCardWrap');
-    const shareSheet = document.getElementById('shareSheet');
+  // Live last-price refresh (5 min)
+  setInterval(refreshTodayLastPrices, 5*60*1000);
+  refreshTodayLastPrices();
+})();
 
-    // Convert cm to px for vertical placement above sheet
-    function cmToPx(cm){
-      const probe = document.createElement('div');
-      probe.style.position='absolute';
-      probe.style.width = cm + 'cm';
-      probe.style.visibility='hidden';
-      document.body.appendChild(probe);
-      const px = probe.getBoundingClientRect().width;
-      document.body.removeChild(probe);
-      return px;
-    }
-    const GAP_CM = 8.5; // change this if you need a different profit-card gap
+/* ===== Composer (kept) ===== */
+const sendBtn = document.getElementById('sendBtn');
+const msgInput = document.getElementById('msgInput');
+const imgBtn = document.getElementById('imgBtn');
+const imgInput = document.getElementById('imgInput');
+const imgPreviewNote = document.getElementById('imgPreviewNote');
 
-    const elSide = document.getElementById('pcardSide');
-    const elLev  = document.getElementById('pcardLev');
-    const elSym  = document.getElementById('pcardSym');
-    const elPct  = document.getElementById('pcardPct');
-    const elEntry= document.getElementById('pcardEntry');
-    const elLast = document.getElementById('pcardLast');
-    const elRef  = document.getElementById('pcardRef');
-    const elQR   = document.getElementById('pcardQR');
+let queuedImageDataURL = null;
+let queuedImageName = null;
 
-    function positionCardAboveSheet(){
-      const gapPx = cmToPx(GAP_CM);
-      const sheetH = shareSheet.offsetHeight || 220; // fallback if hidden
-      overlayCardWrap.style.bottom = (sheetH + gapPx) + 'px';
-    }
+imgBtn.addEventListener('click', ()=> imgInput.click());
+imgInput.addEventListener('change', ()=>{
+  const file = imgInput.files?.[0];
+  if(!file){ queuedImageDataURL = null; queuedImageName = null; imgPreviewNote.hidden = true; return; }
+  const reader = new FileReader();
+  reader.onload = (e)=>{ queuedImageDataURL = e.target.result; queuedImageName = file.name || 'photo'; imgPreviewNote.hidden = false; };
+  reader.readAsDataURL(file);
+});
 
-    function openProfitCardOverlay(t){
-      // Compute with the LATEST live mark at click time
-      const pnl = (t.side === 'LONG') ? upnlLong(t.mark, t.entry, t.qty) : upnlShort(t.mark, t.entry, t.qty);
-      const roi = roiPct(pnl, t.usedMargin);
+function appendTextMessage(text){
+  const b = document.createElement('div'); b.className = 'bub admin'; b.textContent = text;
+  const m = document.createElement('div'); m.className='meta'; m.textContent='Admin';
+  b.appendChild(m); CHAT.appendChild(b); CHAT.scrollTop = CHAT.scrollHeight;
+}
+function appendPhotoMessage(dataURL, altText){
+  const b = document.createElement('div'); b.className = 'bub admin';
+  const img = document.createElement('img'); img.src = dataURL; img.alt = altText || 'photo'; img.className = 'msg-photo';
+  b.appendChild(img);
+  const m = document.createElement('div'); m.className='meta'; m.textContent='Admin';
+  b.appendChild(m); CHAT.appendChild(b); CHAT.scrollTop = CHAT.scrollHeight;
+}
 
-      const isLong = t.side === 'LONG';
-      elSide.textContent = isLong ? 'Long' : 'Short';
-      elSide.classList.toggle('long', isLong);
-      elSide.classList.toggle('short', !isLong);
+sendBtn.addEventListener('click', ()=>{
+  if (queuedImageDataURL){
+    appendPhotoMessage(queuedImageDataURL, queuedImageName);
+    queuedImageDataURL = null; queuedImageName = null; imgInput.value = ''; imgPreviewNote.hidden = true;
+    const t = msgInput.value.trim(); if (t){ appendTextMessage(t); msgInput.value=''; }
+    return;
+  }
+  const val = msgInput.value.trim(); if(!val) return; appendTextMessage(val); msgInput.value = '';
+});
 
-      elLev.textContent = `${t.leverage}x`;
-      elSym.textContent = `${t.sym} Perpetual`;
-
-      elPct.textContent = (roi >= 0 ? '+' : '') + toFixedSafe(roi,2) + '%';
-      elPct.classList.toggle('green', roi >= 0);
-      elPct.classList.toggle('red', roi < 0);
-
-      elEntry.textContent = formatPrice(t.sym, t.entry);
-      elLast.textContent  = formatPrice(t.sym, t.mark);
-
-      elRef.textContent = REF_CODE;
-      elQR.src = `https://api.qrserver.com/v1/create-qr-code/?size=80x80&data=${encodeURIComponent(REF_CODE)}`;
-
-      // Show overlay
-      overlay.classList.add('show');
-      overlay.setAttribute('aria-hidden', 'false');
-
-      // Position card
-      requestAnimationFrame(()=>{ positionCardAboveSheet(); });
-    }
-
-    function closeOverlay(){
-      overlay.classList.remove('show');
-      overlay.setAttribute('aria-hidden', 'true');
-    }
-
-    // Close handlers (background & Cancel)
-    document.getElementById('shareCancel').addEventListener('click', closeOverlay);
-    overlay.addEventListener('click', (e)=>{
-      const withinCard = e.target.closest('#overlayCardWrap');
-      const withinSheet = e.target.closest('#shareSheet');
-      if(!withinCard && !withinSheet) closeOverlay();
-    });
-
-    // Recompute on resize/orientation
-    window.addEventListener('resize', ()=>{ if(overlay.classList.contains('show')) positionCardAboveSheet(); });
-
-    /* ===== INIT ===== */
-    (async function init(){
-      sizeFeed();
-
-      // Randomize target margin balance
-      marginBalanceTarget = Math.round(((BAL_MIN + Math.random()*(BAL_MAX - BAL_MIN)) + Number.EPSILON) * 100) / 100;
-
-      // >>> Today’s realized PNL in absolute USD between 2,500 and 8,000, then percent derived from margin balance
-      realizedTodayUSD = Math.round((REALIZED_MIN_USD + Math.random()*(REALIZED_MAX_USD - REALIZED_MIN_USD)) * 100) / 100;
-      realizedTodayPct = (realizedTodayUSD / marginBalanceTarget) * 100;
-
-      initPhotoSlots();
-
-      // Seed positions from real Binance data (6M entry proxy + live mark)
-      await seedWithFuturesMark6M();
-
-      // Make sure at least two positions are losses (so win/loss both show)
-      forceTwoSmallLossesRandom();
-
-      // Compute top aggregates
-      let initialUnreal = 0;
-      for (const t of trades) { initialUnreal += (t.side === 'LONG') ? upnlLong(t.mark, t.entry, t.qty) : upnlShort(t.mark, t.entry, t.qty); }
-      unrealizedSum = initialUnreal;
-      walletBalance = marginBalanceTarget - unrealizedSum;
-      refreshTop();
-
-      // Start live updates
-      connectFuturesMarkWS();
-    })();
-
-    // Initial placeholders
-    amountEl.textContent = "Loading…";
-    walletEl.textContent = "Loading…";
-    unrealEl.textContent = "Loading…";
-    realizedSpan.textContent = "Loading…";
-  </script>
+/* ===== Mobile-only members trigger ===== */
+const mTrigger = document.getElementById('mTrigger');
+const aside = document.getElementById('membersPanel');
+mTrigger.addEventListener('click', ()=>{
+  if (window.matchMedia('(max-width: 980px)').matches){
+    const willExpand = aside.classList.contains('collapsed');
+    aside.classList.toggle('collapsed');
+    mTrigger.setAttribute('aria-expanded', willExpand ? 'true' : 'false');
+  }
+});
+</script>
 </body>
 </html>
