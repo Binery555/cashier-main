@@ -702,6 +702,20 @@ function langPackRandom(){
   }
 }
 
+/* =================== UNIQUENESS REGISTRY (per batch/day) =================== */
+function makeUniqRegistry(){
+  return {
+    roiSeen: new Set(),      // store rounded ROI integer (e.g., 1345)
+    pnlSeen: new Set(),      // store rounded PNL integer dollars (e.g., 7543)
+    seen(type, value){
+      const v = Math.round(value);
+      const bag = type==='roi' ? this.roiSeen : this.pnlSeen;
+      if (bag.has(v)) return true;
+      bag.add(v); return false;
+    }
+  }
+}
+
 /* ---------- CARD TEMPLATES ---------- */
 function makeProfitCardOld({side, leverage, symbol, entry, last, roiPct, pnlUSDT, ref, qrUrl, lp}){
   const wrap = document.createElement('div');
@@ -737,20 +751,24 @@ function makeProfitCardOld({side, leverage, symbol, entry, last, roiPct, pnlUSDT
   return wrap;
 }
 
+/* >>> UPDATED: header avatar now uses the member's mapped photo if available <<< */
 function makeProfitCardNew({side, leverage, symbol, entry, last, roiPct, pnlUSDT, member, ymd, randomTime, ref, qrUrl, lp}){
   const wrap = document.createElement('div');
   wrap.className = 'nx-card';
   wrap.style.background = `#111 url("${pick(NX_BACKGROUNDS)}") center/cover no-repeat`;
 
   const positive = roiPct >= 0;
-  const showROI = Math.random()<0.6 && Math.abs(roiPct)>=100;
+  const showROI = Math.random()<0.5; /* we will still enforce at least one ROI and one PNL per batch elsewhere */
+
   const pnlLine = showROI
     ? `<div class="nx-roi ${positive?'posG':'posR'}">${positive?'+':''}${roiPct.toFixed(2)}%</div><div class="nx-percent"></div>`
     : `<div class="nx-usd ${positive?'posG':'posR'}">${positive?'+':''}${fmt2(pnlUSDT)}</div><div class="nx-u">USDT</div>`;
 
+  const avSrc = member.photoUrl ? member.photoUrl : "https://iili.io/K10FPQ1.th.jpg";
+
   wrap.innerHTML = `
     <div class="nx-header">
-      <div class="nx-av"><img src="https://iili.io/K10FPQ1.th.jpg" alt="${member.name}"></div>
+      <div class="nx-av"><img src="${avSrc}" alt="${member.name}"></div>
       <div class="nx-user">
         <span class="nx-name">${member.name}</span>
         <span class="nx-time">${ymd} ${randomTime}</span>
@@ -802,23 +820,13 @@ function showTopLoader(on){
 /* helpers */
 function clamp(v,min,max){ return Math.max(min, Math.min(max, v)); }
 
-/* >>> randomized leverage pool kept as-is */
-function chooseLeverageForROI(){
-  const pool = [10, 20, 50, 100, 125];
-  return pool[Math.floor(Math.random()*pool.length)];
-}
+/* >>> leverage pools according to constraints <<< */
+const LEV_POOL_ALL = [10, 20, 50, 100, 125];
+const LEV_POOL_LARGE_PNL = [50,100,125];
 
-function chooseNotionalForPNL(roiPct){
-  const roiFactor = Math.abs(roiPct)/100 || 0.001;
-  const minPNL=300, maxPNL=10000;
-  const minNotional = minPNL / roiFactor;
-  const maxNotional = maxPNL / roiFactor;
-  const n = minNotional + Math.random()*(maxNotional - minNotional);
-  return clamp(n, 50, 200000);
-}
-
-/* ---------- Build one day (real prices for that calendar day, Colombo) ---------- */
+/* ---------- Build one day with constraints ---------- */
 async function buildDayFragment(day, opts={}){
+  const uniq = makeUniqRegistry(); // ensure no duplicate amounts inside this batch
   const frag = document.createDocumentFragment();
   const cardsToday = opts.count ?? (10 + Math.floor(Math.random() * 6)); // [10..15]
   const needSymbols = new Set();
@@ -830,6 +838,10 @@ async function buildDayFragment(day, opts={}){
   await Promise.all(Array.from(needSymbols).map(sym => loadDailyKlines(sym, day)));
 
   const isToday = ymdColombo(day) === todayColomboYMD();
+
+  // ensure at least one ROI card and one PNL card
+  let mustMakeROI = true;
+  let mustMakePNL = true;
 
   for (let c=0; c<cardsToday; c++){
     const symbol = pick(SYMBOLS);
@@ -845,33 +857,154 @@ async function buildDayFragment(day, opts={}){
       if (live && isFinite(live)) last = live;
     }
 
+    // Positive-side enforcement (win only)
     const longPct  = ((last - entry) / entry) * 100;
     const shortPct = ((entry - last) / entry) * 100;
-    const side = longPct >= shortPct ? 'LONG' : 'SHORT';
-    const pctBase = side==='LONG' ? longPct : shortPct;
+    const basePctRaw = Math.max(longPct, shortPct, 0); // >= 0
+    const side = (longPct >= shortPct) ? 'LONG' : 'SHORT';
+    let basePct = basePctRaw;
 
-    const lev = Math.round(chooseLeverageForROI());
-    const roiPct = pctBase * lev;
+    // language pack
+    const lp = langPackRandom();
 
-    const notional = chooseNotionalForPNL(roiPct);
-    const pnlUSDT = notional * (roiPct/100);
+    // Pick leverage so ROI in [300..4000] if possible
+    let lev = pick(LEV_POOL_ALL);
+    let roiCandidate = basePct * lev;
 
+    // If ROI too small, try bump leverage
+    if (roiCandidate < 300){
+      lev = 125;
+      roiCandidate = basePct * lev;
+    }
+    // If ROI too big, lower leverage
+    if (roiCandidate > 4000){
+      if (basePct > 0) {
+        // find smallest lev that brings it <= 4000
+        const tryOrder = [10,20,50,100,125];
+        for (const L of tryOrder){
+          if (basePct * L <= 4000 && basePct * L >= 300){ lev = L; roiCandidate = basePct * L; break; }
+        }
+        // if still >4000, clamp with 10x (will fall back to PNL if <300)
+        if (roiCandidate > 4000){ lev = 10; roiCandidate = basePct * lev; }
+      }
+    }
+
+    // Decide display type, but satisfy batch constraints
+    let wantROI = Math.random()<0.5;
+    if (mustMakeROI) { wantROI = true; }
+    if (mustMakePNL) { wantROI = false; }
+
+    // If we want ROI, make sure 300..4000 and unique
+    let showAsROI = false;
+    let roiFinal = roiCandidate;
+
+    if (wantROI && basePct > 0){
+      // If after leverage tuning it still not in range, try force into range by raising lev
+      if (roiFinal < 300 && basePct > 0){
+        lev = 125;
+        roiFinal = basePct * lev;
+      }
+      if (roiFinal >= 300 && roiFinal <= 4000){
+        // ensure uniqueness
+        let tries=0;
+        while (uniq.seen('roi', roiFinal) && tries<3){
+          roiFinal += 0.11; tries++;
+        }
+        if (!uniq.seen('roi', roiFinal)){
+          showAsROI = true;
+          mustMakeROI = false;
+        }
+      }
+    }
+
+    // If not ROI, do PNL in $500..$10,000, and large PNL uses 50/100/125
+    let pnlUSDT = 0;
+    if (!showAsROI){
+      // choose notional so pnl in range
+      const roiPct = basePct * lev;
+      const rf = Math.max(roiPct/100, 0.001);
+      const targetMin = 500, targetMax = 10000;
+      // notional = pnl / rf
+      let notional = (targetMin + Math.random()*(targetMax-targetMin)) / rf;
+      notional = clamp(notional, 50, 200000);
+      pnlUSDT = notional * rf;
+
+      // leverage rule for large pnl
+      if (pnlUSDT >= 5000 && !LEV_POOL_LARGE_PNL.includes(lev)){
+        lev = pick(LEV_POOL_LARGE_PNL);
+        const rf2 = Math.max((basePct*lev)/100, 0.001);
+        notional = (targetMin + Math.random()*(targetMax-targetMin)) / rf2;
+        notional = clamp(notional, 50, 200000);
+        pnlUSDT = notional * rf2;
+      }
+
+      // uniqueness
+      let tries=0;
+      while (uniq.seen('pnl', pnlUSDT) && tries<3){
+        pnlUSDT += 7.25; tries++;
+      }
+      if (uniq.seen('pnl', pnlUSDT)){
+        // if still duplicate, flip to ROI if possible
+        if (basePct>0){
+          let altLev = pick(LEV_POOL_ALL);
+          let altROI = basePct*altLev;
+          if (altROI>=300 && altROI<=4000 && !uniq.seen('roi', altROI)){
+            showAsROI = true; roiFinal = altROI; lev = altLev; mustMakeROI = false;
+          }
+        }
+      }else{
+        mustMakePNL = false;
+      }
+    }
+
+    // safety: ensure at least one type made
+    if (c === cardsToday-1){
+      if (mustMakeROI && basePct>0){
+        let forceLev = 100;
+        let forceROI = basePct*forceLev;
+        if (forceROI < 300) { forceLev = 125; forceROI = basePct*forceLev; }
+        if (forceROI > 4000) { forceLev = 10; forceROI = basePct*forceLev; }
+        if (forceROI>=300 && forceROI<=4000){
+          showAsROI = true; roiFinal = forceROI; lev = forceLev; mustMakeROI=false;
+        }
+      }else if (mustMakePNL){
+        // recompute pnl unique
+        const rf = Math.max((basePct*lev)/100, 0.001);
+        pnlUSDT = (700 + Math.random()*2000); // mid-range guarantee
+        let tries=0;
+        while (uniq.seen('pnl', pnlUSDT) && tries<4){ pnlUSDT += 3.57; tries++; }
+        mustMakePNL = false;
+      }
+    }
+
+    // build member/time
     const member = members[(Math.random()*members.length)|0];
     const ymd = ymdColombo(day);
     const hh = String(Math.floor(Math.random()*24)).padStart(2,'0');
     const mm = String(Math.floor(Math.random()*60)).padStart(2,'0');
     const ss = String(Math.floor(Math.random()*60)).padStart(2,'0');
     const timeText = `${hh}:${mm}:${ss}`;
-
     const tempRef = String(Math.floor(100000000 + Math.random()*900000000));
 
-    /* NEW: per-card language pack (≈1/10 in VI or TH) */
-    const lp = langPackRandom();
+    // prepare card node — keep everything positive (win)
+    const roiOut = Math.abs(showAsROI ? roiFinal : (basePct*lev));
+    const pnlOut = Math.abs(showAsROI ? (Math.abs(pnlUSDT)||0) : pnlUSDT);
 
-    const useNew = true;
-    const node = useNew
-      ? makeProfitCardNew({side, leverage:lev, symbol, entry, last, roiPct, pnlUSDT, member, ymd, randomTime:timeText, ref:tempRef, qrUrl:null, lp})
-      : makeProfitCardOld({side, leverage:lev, symbol, entry, last, roiPct, pnlUSDT, ref:tempRef, qrUrl:null, lp});
+    const node = makeProfitCardNew({
+      side,
+      leverage: lev,
+      symbol,
+      entry,
+      last,
+      roiPct: roiOut,
+      pnlUSDT: pnlOut,
+      member,
+      ymd,
+      randomTime: timeText,
+      ref: tempRef,
+      qrUrl: null,
+      lp
+    });
 
     frag.appendChild(makeAdminBubbleNode(node, member.name));
   }
