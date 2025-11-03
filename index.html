@@ -676,15 +676,16 @@ async function loadCurrentPrice(symbol){
 const NX_BACKGROUNDS = ['https://iili.io/Kgp9GJj.gif','https://iili.io/Kr9UiVR.gif'];
 NX_BACKGROUNDS.forEach(src=>{ const img=new Image(); img.src=src; });
 
-/* ---------- QR + REFERRAL POOL (NO DUPLICATES) ---------- */
+/* ---------- QR + REFERRAL POOL (FILTERED: remove blocked pair) ---------- */
+const BLOCKED_QR_URL = "https://iili.io/K6pewla.jpg";
+const BLOCKED_CODE   = "475308515";
 const CUSTOM_QR_POOL = [
   { url:"https://iili.io/K6p8Q5J.jpg", code:"266486323" },
   { url:"https://iili.io/K6pvpcu.jpg", code:"361342455" },
   { url:"https://iili.io/K6pvYyx.jpg", code:"542025165" },
   { url:"https://iili.io/K6pkLEF.jpg", code:"481962935" },
-  { url:"https://iili.io/K6pkCs1.jpg", code:"1024836096" },
-  { url:"https://iili.io/K6pewla.jpg", code:"475308515" }
-];
+  { url:"https://iili.io/K6pkCs1.jpg", code:"1024836096" }
+].filter(item => item.url !== BLOCKED_QR_URL && item.code !== BLOCKED_CODE);
 
 /* ======== NEW: Language packs & selector (≈ 1 in 10 cards VN/TH) ======== */
 function langPackRandom(){
@@ -890,7 +891,9 @@ function assignQRCodesToTail(){
       idxs.add(Math.floor(Math.random()*tail.length));
     }
 
-    const pool = CUSTOM_QR_POOL.slice();
+    // Filter again at runtime for extra safety
+    const pool = CUSTOM_QR_POOL
+      .filter(p => p.url !== BLOCKED_QR_URL && p.code !== BLOCKED_CODE);
     shuffle(pool);
 
     let i = 0;
